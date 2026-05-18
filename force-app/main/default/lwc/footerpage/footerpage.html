@@ -1,0 +1,144 @@
+<template>
+
+    <!-- Main footer UI -->
+    <template if:true={footerSections}>
+        <div class="footer-container">
+            <div class="footer-content">
+
+                <!-- Brand / Logo Column -->
+                <template for:each={footerSections} for:item="section">
+                    <div key={section.id} class="footer-section">
+                          <!-- Rich Text Logo -->
+                        <div class="logo-container">
+                            <lightning-formatted-rich-text value={section.logo}></lightning-formatted-rich-text>
+                        </div>
+
+                        <!-- Social Icons -->
+                        <div class="social-icons">
+                            Social Icons Here
+                        </div>
+                                    <p class="section-description">{section.description}</p>
+                        <!-- Social Icons -->
+                        <div class="social-icons">
+                            <!-- Facebook -->
+                            <a href="javascript:void(0)" class="social-icon" title="Facebook" onclick={openFacebook}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff">
+                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                                </svg>
+                            </a>
+                            <!-- Instagram -->
+                            <a href="javascript:void(0)" class="social-icon" title="Instagram" onclick={openInstagram}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <circle cx="17.5" cy="6.5" r="1" fill="#ffffff" stroke="none"/>
+                                </svg>
+                            </a>
+                            <!-- Twitter / X -->
+                            <a href="javascript:void(0)" class="social-icon" title="Twitter" onclick={openTwitter}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                            </a>
+                            <!-- LinkedIn -->
+                            <a href="javascript:void(0)" class="social-icon" title="LinkedIn" onclick={openLinkedIn}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff">
+                                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                    <rect x="2" y="9" width="4" height="12"/>
+                                    <circle cx="4" cy="4" r="2"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Dynamic Footer Sections (Quick Links) -->
+                <template for:each={footerSections} for:item="section">
+                    <div key={section.id} class="footer-section">
+                        <h2 class="section-title">{section.name}</h2>
+                        <template for:each={section.items} for:item="item">
+                            <div key={item.label} class="footer-item">
+                                <a href={item.url} >{item.label}</a><br />
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Newsletter Subscribe Section -->
+                <div class="footer-section">
+                    <h2 class="section-title">Subscribe</h2>
+                    <template for:each={footerSections} for:item="section">
+                        <div key={section.id} class="footer-section">
+                            <p class="section-description">{section.subscribe}</p>
+                        </div>
+                    </template>
+                    <div class="newsletter-form">
+                        <lightning-input
+                            type="email"
+                            variant="label-hidden"
+                            placeholder="Enter your email"
+                            class="newsletter-input"
+                            value={subscriberEmail}
+                            onchange={handleEmailChange}>
+                        </lightning-input>
+                        <button class="subscribe-btn" onclick={handleSubscribe}>
+                            Subscribe <lightning-icon icon-name="utility:chevronright" size="xx-small" variant="inverse" class="slds-m-left_x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Our Location Section -->
+                <div class="footer-section map-section">
+                    <h2 class="section-title">Our Location</h2>
+                    <template for:each={footerSections} for:item="section">
+                        <div key={section.id} class="footer-section contact-info">
+                            <p class="contact-item">
+                                <lightning-icon icon-name="utility:checkin" size="xx-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                                <span>{section.location}</span>
+                            </p>
+                            <p class="contact-item">
+                                <lightning-icon icon-name="utility:call" size="xx-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                                <span>{section.footercontact}</span>
+                            </p>
+                            <p class="contact-item">
+                                <lightning-icon icon-name="utility:email" size="xx-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                                <span>{section.email}</span>
+                            </p>
+                        </div>
+                    </template>
+                    <div class="map-container">
+                        <template if:true={hasMarkers}>
+                            <lightning-map
+                                map-markers={mapMarkers}
+                                zoom-level={zoomLevel}
+                                list-view="hidden">
+                            </lightning-map>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-inner">
+                     <template for:each={footerSections} for:item="section">
+                        <div key={section.id} class="footer-section">
+                           <span class="footer-copyright">&copy; {section.left_side}</span>
+                        </div>
+                    </template>
+                    <div class="footer-legal-links">
+                     <template for:each={footerSections} for:item="section">
+                        <div key={section.id} class="footer-section">
+                           <a href="#">{section.right_side} </a>
+                           <a href="#">|  {section.termcondition}</a>
+                        </div>
+                    </template>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+</template>

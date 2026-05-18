@@ -1,0 +1,109 @@
+<template>
+    <div class="auth-shell">
+        <header class="auth-header slds-p-horizontal_large slds-p-vertical_small">
+            <div class="brand">Car Rental</div>
+            <nav class="nav-links">
+                <template lwc:if={isLoggedIn}>
+                    <a href="javascript:void(0)">Dashboard</a>
+                    <a href="javascript:void(0)" onclick={handleLogout}>Logout</a>
+                </template>
+                <template lwc:else>
+                    <a href="javascript:void(0)" onclick={switchToSignup}>Sign Up</a>
+                    <a href="javascript:void(0)" onclick={switchToLogin}>Login</a>
+                </template>
+            </nav>
+        </header>
+
+        <lightning-layout class="auth-layout" multiple-rows="false" vertical-align="stretch">
+            <lightning-layout-item size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                <div class="left-panel slds-theme_success slds-p-around_large">
+                    <h1>Car Rental</h1>
+                    <p>Comfortable rides, modern fleet, and instant booking.</p>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                <div class="right-panel slds-p-around_large">
+                    <template lwc:if={isLoginMode}>
+                        <h2 class="title">Login</h2>
+                        <lightning-input
+                            data-id="loginEmail"
+                            type="email"
+                            label="E-mail"
+                            value={loginEmail}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            data-id="loginPassword"
+                            type="password"
+                            label="Password"
+                            value={loginPassword}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <p class="trip-note">Since this is your first trip, we are excited to have you onboard.</p>
+                        <lightning-button
+                            variant="brand"
+                            label="Login"
+                            class="slds-m-top_medium"
+                            onclick={handleLogin}
+                            disabled={isLoading}>
+                        </lightning-button>
+                        <p class="toggle-link slds-m-top_medium">
+                            New member?
+                            <a href="javascript:void(0)" onclick={switchToSignup}>Sign Up</a>
+                        </p>
+                    </template>
+
+                    <template lwc:else>
+                        <h2 class="title">Sign Up</h2>
+                        <lightning-input
+                            data-id="signupName"
+                            type="text"
+                            label="Name"
+                            value={signupName}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            data-id="signupEmail"
+                            type="email"
+                            label="E-mail"
+                            value={signupEmail}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            data-id="signupPassword"
+                            type="password"
+                            label="Password"
+                            value={signupPassword}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            data-id="signupConfirmPassword"
+                            type="password"
+                            label="Confirm Password"
+                            value={signupConfirmPassword}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                        <lightning-button
+                            variant="brand"
+                            label="Create Account"
+                            class="slds-m-top_medium"
+                            onclick={handleSignup}
+                            disabled={isLoading}>
+                        </lightning-button>
+                        <p class="toggle-link slds-m-top_medium">
+                            Already have an account?
+                            <a href="javascript:void(0)" onclick={switchToLogin}>Login</a>
+                        </p>
+                    </template>
+
+                    <template lwc:if={isLoading}>
+                        <div class="spinner-wrap">
+                            <lightning-spinner size="small" alternative-text="Processing"></lightning-spinner>
+                        </div>
+                    </template>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

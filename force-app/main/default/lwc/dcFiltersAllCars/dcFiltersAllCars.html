@@ -1,0 +1,208 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="cars-section">
+        <div class="section-header">
+            <div class="header-title-box">
+                <h2>Popular Cars</h2>
+                <span class="results-count" if:true={filteredCars.length}>{filteredCars.length} cars found</span>
+            </div>
+            <a href="javascript:void(0);" class="view-all">View All &gt;</a>
+        </div>
+
+
+        <div class="new-car-grid">
+            <template for:each={filteredCars} for:item="car">
+                <div key={car.id} class="new-car-card">
+                    <div class="card-image-box">
+                        <div class="heart-icon"><lightning-icon icon-name="utility:favorite" size="xx-small"></lightning-icon></div>
+                        <img src={car.imageUrl} alt={car.name} />
+                    </div> 
+
+                    <div class="card-info">
+                        <div class="card-category-row">
+                            <span class="category-tag">{car.type}</span>
+                            <template if:true={car.subCategory}>
+                                <span class="subcategory-tag">• {car.subCategory}</span>
+                            </template>
+                            <span class={car.statusClass}>{car.status}</span>
+                        </div>
+                        <h3 class="new-car-name">{car.fullName}</h3>
+                        <div class="car-specs">
+                            <span><lightning-icon icon-name="utility:groups" size="xx-small"></lightning-icon> {car.seats}</span>
+                            <span><lightning-icon icon-name="utility:settings" size="xx-small"></lightning-icon> {car.transmission}</span>
+                            <span><lightning-icon icon-name="utility:tracker" size="xx-small"></lightning-icon> {car.fuelType}</span>
+                        </div>
+                        <div class="card-price-row">
+                            <div class="price-box">
+                                <span class="currency">₹{car.priceDisplay}</span>
+                                <span class="per-day">/ day</span>
+                            </div>
+                            <button class="new-book-btn" data-id={car.id} onclick={handleBookNow}>Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <template if:true={showBookingModal}>
+        <div class="modal-overlay" onclick={handleOverlayClick}>
+            <div class="modal-content-container" onclick={stopPropagation}>
+                <button class="close-modal" onclick={closeModal}>&#x2715;</button>
+
+                <div class="booking-ui-container">
+                    <!-- Modal Header -->
+                    <div class="booking-header">
+                        <div class="header-car-info">
+                            <img src={selectedCar.imageUrl} alt={selectedCar.name} class="mini-car-img"/>
+                            <div>
+                                <h2>Book {selectedCar.fullName}</h2>
+                                <p class="car-category-badge">{selectedCar.type} • {selectedCar.transmission}</p>
+                                <p class="car-make-model">{selectedCar.fuelType} • {selectedCar.seats}</p>
+                            </div>
+                        </div>
+                        <div class="price-summary">
+                            <span class="price-val">₹{selectedCar.priceDisplay}</span>
+                            <span class="price-label">/ day</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Form -->
+                    <div class="booking-form-wrapper">
+                        <form onsubmit={handleBookingSubmit}>
+
+                            <!-- Customer Details -->
+                            <div class="form-section">
+                                <h3>
+                                    <lightning-icon icon-name="utility:user" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Customer Details
+                                </h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name <span class="req">*</span></label>
+                                        <input type="text" class="form-input" placeholder="Enter your full name"
+                                            value={bookingCustomerName} oninput={handleCustomerNameChange} required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email <span class="req">*</span></label>
+                                        <input type="email" class="form-input" placeholder="Enter your email"
+                                            value={bookingCustomerEmail} oninput={handleCustomerEmailChange} required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" class="form-input" placeholder="Enter your phone number"
+                                            value={bookingCustomerPhone} oninput={handleCustomerPhoneChange} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pickup & Dropoff -->
+                            <div class="form-section">
+                                <h3>
+                                    <lightning-icon icon-name="utility:location" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Pickup Location
+                                </h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">City / Location <span class="req">*</span></label>
+                                        <input type="text" class="form-input" placeholder="City name"
+                                            value={pickupLocation} oninput={handlePickupLocationChange} required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Address <span class="req">*</span></label>
+                                        <input type="text" class="form-input" placeholder="Full address"
+                                            value={pickupAddress} oninput={handlePickupAddressChange} required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">State <span class="req">*</span></label>
+                                        <input type="text" class="form-input" placeholder="State"
+                                            value={pickupState} oninput={handlePickupStateChange} required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dropoff Location -->
+                            <div class="form-section">
+                                <h3>
+                                    <lightning-icon icon-name="utility:location" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Return Location <span class="form-optional">(if different)</span>
+                                </h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">City / Location</label>
+                                        <input type="text" class="form-input" placeholder="City name (if different)"
+                                            value={dropoffLocation} oninput={handleDropoffLocationChange} />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Address</label>
+                                        <input type="text" class="form-input" placeholder="Full address"
+                                            value={dropoffAddress} oninput={handleDropoffAddressChange} />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">State</label>
+                                        <input type="text" class="form-input" placeholder="State"
+                                            value={dropoffState} oninput={handleDropoffStateChange} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dates -->
+                            <div class="form-section">
+                                <h3>
+                                    <lightning-icon icon-name="utility:event" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Rental Dates
+                                </h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Pickup Date &amp; Time <span class="req">*</span></label>
+                                        <input type="datetime-local" class="form-input"
+                                            value={pickupDate} oninput={handlePickupDateChange} required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Dropoff Date &amp; Time <span class="req">*</span></label>
+                                        <input type="datetime-local" class="form-input"
+                                            value={dropoffDate} oninput={handleDropoffDateChange} required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Summary Box -->
+                            <template if:true={totalAmount}>
+                                <div class="booking-summary-box">
+                                    <div class="summary-row">
+                                        <span>Duration</span>
+                                        <span>{durationDays} Days</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Rate</span>
+                                        <span>₹{selectedCar.priceDisplay} / day</span>
+                                    </div>
+                                    <div class="summary-row total">
+                                        <span>Total Amount</span>
+                                        <span>₹{totalAmount}</span>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Error Message -->
+                            <template if:true={bookingError}>
+                                <div class="booking-error-msg">{bookingError}</div>
+                            </template>
+
+                            <!-- Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" onclick={closeModal}>Cancel</button>
+                                <button type="submit" class="confirm-btn" disabled={isSubmitting}>
+                                    <template if:true={isSubmitting}>Saving...</template>
+                                    <template if:false={isSubmitting}>Confirm Booking</template>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>

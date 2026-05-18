@@ -1,0 +1,634 @@
+<template>
+    <div class="booking-container">
+        <!-- Success Confirmation State -->
+        <template if:true={isBookingSuccessful}>
+            <div class="success-screen animate-fade-in">
+                <div class="success-icon-wrap">
+                    <lightning-icon icon-name="action:approval" size="large" class="success-icon"></lightning-icon>
+                </div>
+                <h2 class="success-title">Booking Confirmed!</h2>
+                <p class="success-message">
+                    Thank you, <strong>{cusName}</strong>! Your dream journey is secured. We have reserved the <strong>{activeCarName}</strong> for you.
+                </p>
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <span class="receipt-label">Booking Reference</span>
+                        <span class="receipt-value font-highlight">SFS-{bookingId}</span>
+                    </div>
+                    <div class="receipt-body">
+                        <div class="receipt-row">
+                            <span class="label">Vehicle:</span>
+                            <span class="value">{activeCarName} ({activeCarType})</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="label">Pickup Location:</span>
+                            <span class="value">{pickupLoc}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="label">Rental Period:</span>
+                            <span class="value">{rentalDays} Days</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="label">Total Charged:</span>
+                            <span class="value grand-total-highlight">₹{grandTotal}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="email-notice">
+                    <lightning-icon icon-name="utility:email" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    A PDF confirmation and tax invoice have been dispatched to <strong>{Email_Id}</strong>.
+                </div>
+                <div class="success-actions">
+                    <button class="btn-primary-red" onclick={resetBooking}>Book Another Journey</button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Active Stepper and Wizard Form -->
+        <template if:false={isBookingSuccessful}>
+            <!-- Wizard Header & Brand -->
+            <div class="wizard-header">
+                <div class="brand-badge">SAFAR SATHI PREMIUM</div>
+                <h1 class="wizard-title">Rent Your Dream Car</h1>
+                <p class="wizard-subtitle">Complete your reservation in three simple steps.</p>
+            </div>
+
+            <!-- Sleek Interactive Progress Stepper -->
+            <div class="stepper-container">
+                <div class="stepper-track">
+                    <div class={step1Class}>
+                        <div class="step-badge">1</div>
+                        <span class="step-label">Duration & Car</span>
+                    </div>
+                    <div class={step2Class}>
+                        <div class="step-badge">2</div>
+                        <span class="step-label">Driver & Extras</span>
+                    </div>
+                    <div class={step3Class}>
+                        <div class="step-badge">3</div>
+                        <span class="step-label">Summary & Pay</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Form & Summary Layout -->
+            <div class="booking-layout">
+                <!-- Main Form Column -->
+                <div class="form-column">
+                    
+                    <!-- STEP 1: DURATION & CAR SELECTION -->
+                    <template if:true={isStep1}>
+                        <div class="step-body animate-slide-in">
+                            <h3 class="section-title">Step 1: Vehicle & Travel Period</h3>
+                            
+                            <!-- Vehicle Selection Selection -->
+                            <div class="form-group mb-4">
+                                <template if:false={selectedCarName}>
+                                    <lightning-combobox
+                                        name="carSelection"
+                                        label="Choose Vehicle"
+                                        value={carName}
+                                        placeholder="Pick a premium vehicle"
+                                        options={carOptions}
+                                        onchange={handleCarChange}
+                                        required
+                                        class="premium-input"
+                                    ></lightning-combobox>
+                                </template>
+                                <template if:true={selectedCarName}>
+                                    <div class="selected-car-alert">
+                                        <div class="selected-car-badge-icon">🚗</div>
+                                        <div>
+                                            <p class="car-badge-title">Selected Vehicle</p>
+                                            <p class="car-badge-name">{selectedCarName}</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Detailed Pickup & Dropoff Address Section -->
+                            <div class="grid-2-col mb-4">
+                                <!-- Pickup Address Panel -->
+                                <div class="address-block">
+                                    <h4 class="address-sub-title">📍 Pickup Location Details</h4>
+                                    
+                                    <div class="form-group mb-2">
+                                        <lightning-input 
+                                            type="text" 
+                                            label="Street Address" 
+                                            value={pickupStreet} 
+                                            onchange={handleInputChange}
+                                            data-id="pickupStreet"
+                                            required
+                                            class="premium-input"
+                                            placeholder="House No, Street, Area"
+                                        ></lightning-input>
+                                    </div>
+                                    
+                                    <div class="form-group mb-2">
+                                        <lightning-input 
+                                            type="text" 
+                                            label="Landmark / Locality" 
+                                            value={pickupLandmark} 
+                                            onchange={handleInputChange}
+                                            data-id="pickupLandmark"
+                                            class="premium-input"
+                                            placeholder="Near Mall, Junction, etc."
+                                        ></lightning-input>
+                                    </div>
+                                    
+                                    <div class="grid-3-col">
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="City" 
+                                                value={pickupCity} 
+                                                onchange={handleInputChange}
+                                                data-id="pickupCity"
+                                                required
+                                                class="premium-input"
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="State" 
+                                                value={pickupState} 
+                                                onchange={handleInputChange}
+                                                data-id="pickupState"
+                                                required
+                                                class="premium-input"
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="PIN Code" 
+                                                value={pickupPin} 
+                                                onchange={handleInputChange}
+                                                data-id="pickupPin"
+                                                required
+                                                class="premium-input"
+                                                placeholder="800001"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dropoff Address Panel -->
+                                <div class="address-block">
+                                    <h4 class="address-sub-title">🏁 Dropoff Location Details</h4>
+                                    
+                                    <div class="form-group mb-2">
+                                        <lightning-input 
+                                            type="text" 
+                                            label="Street Address" 
+                                            value={dropoffStreet} 
+                                            onchange={handleInputChange}
+                                            data-id="dropoffStreet"
+                                            required
+                                            class="premium-input"
+                                            placeholder="House No, Street, Area"
+                                        ></lightning-input>
+                                    </div>
+                                    
+                                    <div class="form-group mb-2">
+                                        <lightning-input 
+                                            type="text" 
+                                            label="Landmark / Locality" 
+                                            value={dropoffLandmark} 
+                                            onchange={handleInputChange}
+                                            data-id="dropoffLandmark"
+                                            class="premium-input"
+                                            placeholder="Near Mall, Junction, etc."
+                                        ></lightning-input>
+                                    </div>
+                                    
+                                    <div class="grid-3-col">
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="City" 
+                                                value={dropoffCity} 
+                                                onchange={handleInputChange}
+                                                data-id="dropoffCity"
+                                                required
+                                                class="premium-input"
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="State" 
+                                                value={dropoffState} 
+                                                onchange={handleInputChange}
+                                                data-id="dropoffState"
+                                                required
+                                                class="premium-input"
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="PIN Code" 
+                                                value={dropoffPin} 
+                                                onchange={handleInputChange}
+                                                data-id="dropoffPin"
+                                                required
+                                                class="premium-input"
+                                                placeholder="800001"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dates Row -->
+                            <div class="grid-2-col mb-4">
+                                <div class="form-group">
+                                    <lightning-input 
+                                        type="datetime-local" 
+                                        label="Pickup Date & Time" 
+                                        value={startTime}
+                                        onchange={handleInputChange} 
+                                        data-id="startTime"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-input>
+                                </div>
+                                <div class="form-group">
+                                    <lightning-input 
+                                        type="datetime-local" 
+                                        label="Dropoff Date & Time" 
+                                        value={endTime}
+                                        onchange={handleInputChange} 
+                                        data-id="endTime"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-input>
+                                </div>
+                            </div>
+
+                            <!-- Step Navigation Footer -->
+                            <div class="step-footer mt-5">
+                                <span class="step-count">1 of 3 Steps</span>
+                                <button class="btn-primary-red" onclick={goToNextStep}>Next: Add Driver Info &rarr;</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- STEP 2: PERSONAL DETAILS & PREMIUM EXTRAS -->
+                    <template if:true={isStep2}>
+                        <div class="step-body animate-slide-in">
+                            <h3 class="section-title">Step 2: Driver Details & Extras</h3>
+                            
+                            <!-- Personal Inputs -->
+                            <div class="grid-2-col mb-4">
+                                <div class="form-group">
+                                    <lightning-input  
+                                        type="text" 
+                                        label="Full Name" 
+                                        value={cusName}
+                                        onchange={handleInputChange} 
+                                        data-id="cusName"
+                                        placeholder="Driver's full name"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-input>
+                                </div>
+                                <div class="form-group">
+                                    <lightning-input  
+                                        type="tel" 
+                                        label="Phone Number" 
+                                        value={Phone_no}
+                                        onchange={handleInputChange} 
+                                        data-id="Phone_no"
+                                        placeholder="e.g. 9876543210"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <div class="form-group mb-4">
+                                <lightning-input  
+                                    type="email" 
+                                    label="Email Address" 
+                                    value={Email_Id}
+                                    onchange={handleInputChange} 
+                                    data-id="Email_Id"
+                                    placeholder="yourname@domain.com"
+                                    required
+                                    class="premium-input"
+                                ></lightning-input>
+                            </div>
+
+                            <!-- Dynamic Booking Picklists (Status & Payment Status) -->
+                            <div class="grid-2-col mb-4">
+                                <div class="form-group">
+                                    <lightning-combobox
+                                        name="bookingStatus"
+                                        label="Booking Status"
+                                        value={bookingStatus}
+                                        placeholder="Select Status"
+                                        options={statusOptions}
+                                        onchange={handleInputChange}
+                                        data-id="bookingStatus"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="form-group">
+                                    <lightning-combobox
+                                        name="paymentStatus"
+                                        label="Payment Status"
+                                        value={paymentStatus}
+                                        placeholder="Select Payment Status"
+                                        options={paymentStatusOptions}
+                                        onchange={handleInputChange}
+                                        data-id="paymentStatus"
+                                        required
+                                        class="premium-input"
+                                    ></lightning-combobox>
+                                </div>
+                            </div>
+
+                            <!-- Premium Extras Checklist -->
+                            <div class="extras-section mt-4 mb-4">
+                                <h4 class="extras-title">Enhance Your Drive (Add-ons)</h4>
+                                <div class="extras-grid">
+                                    
+                                    <!-- Extra 1: GPS -->
+                                    <div class="extra-card">
+                                        <div class="extra-info">
+                                            <lightning-icon icon-name="utility:travel_and_places" size="small" class="extra-icon"></lightning-icon>
+                                            <div>
+                                                <p class="extra-name">Offline Smart GPS</p>
+                                                <p class="extra-desc">High precision satellite navigation.</p>
+                                            </div>
+                                        </div>
+                                        <div class="extra-action">
+                                            <span class="extra-price">₹299/day</span>
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                checked={gpsSelected}
+                                                onchange={handleExtraToggle}
+                                                data-extra="gps"
+                                                variant="label-hidden"
+                                                class="premium-toggle"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <!-- Extra 2: Insurance -->
+                                    <div class="extra-card">
+                                        <div class="extra-info">
+                                            <lightning-icon icon-name="utility:shield" size="small" class="extra-icon"></lightning-icon>
+                                            <div>
+                                                <p class="extra-name">Zero-Dep insurance</p>
+                                                <p class="extra-desc">100% collision waiver and road cover.</p>
+                                            </div>
+                                        </div>
+                                        <div class="extra-action">
+                                            <span class="extra-price">₹999/day</span>
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                checked={insuranceSelected}
+                                                onchange={handleExtraToggle}
+                                                data-extra="insurance"
+                                                variant="label-hidden"
+                                                class="premium-toggle"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <!-- Extra 3: Child Seat -->
+                                    <div class="extra-card">
+                                        <div class="extra-info">
+                                            <lightning-icon icon-name="utility:people" size="small" class="extra-icon"></lightning-icon>
+                                            <div>
+                                                <p class="extra-name">Child Safety Seat</p>
+                                                <p class="extra-desc">Certified ergonomic ISOFIX seat.</p>
+                                            </div>
+                                        </div>
+                                        <div class="extra-action">
+                                            <span class="extra-price">₹499/day</span>
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                checked={childSeatSelected}
+                                                onchange={handleExtraToggle}
+                                                data-extra="childSeat"
+                                                variant="label-hidden"
+                                                class="premium-toggle"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <!-- Extra 4: Roadside Assist -->
+                                    <div class="extra-card">
+                                        <div class="extra-info">
+                                            <lightning-icon icon-name="utility:help" size="small" class="extra-icon"></lightning-icon>
+                                            <div>
+                                                <p class="extra-name">24/7 Roadside Assist</p>
+                                                <p class="extra-desc">Emergency towing, flat tires, and keys.</p>
+                                            </div>
+                                        </div>
+                                        <div class="extra-action">
+                                            <span class="extra-price">₹399/day</span>
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                checked={roadsideSelected}
+                                                onchange={handleExtraToggle}
+                                                data-extra="roadside"
+                                                variant="label-hidden"
+                                                class="premium-toggle"
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Step Navigation Footer -->
+                            <div class="step-footer mt-5">
+                                <button class="btn-outline-dark" onclick={goToPreviousStep}>&larr; Back</button>
+                                <span class="step-count">2 of 3 Steps</span>
+                                <button class="btn-primary-red" onclick={goToNextStep}>Next: Review & Pay &rarr;</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- STEP 3: SUMMARY & MOCK PAYMENT SELECTOR -->
+                    <template if:true={isStep3}>
+                        <div class="step-body animate-slide-in">
+                            <h3 class="section-title">Step 3: Review Details & Payment</h3>
+                            
+                            <!-- Detailed Summary Section -->
+                            <div class="summary-details mb-4">
+                                <h4 class="summary-section-title">Rental Information Summary</h4>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="sum-label">Customer Name:</span>
+                                        <span class="sum-value">{cusName}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="sum-label">Contact Mobile:</span>
+                                        <span class="sum-value">{Phone_no}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="sum-label">Pickup Location:</span>
+                                        <span class="sum-value text-capitalize">{pickupLoc}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="sum-label">Drop-off Location:</span>
+                                        <span class="sum-value text-capitalize">{dropoffLoc}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="sum-label">Booking Status:</span>
+                                        <span class="sum-value text-capitalize">{bookingStatus}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="sum-label">Payment Status:</span>
+                                        <span class="sum-value text-capitalize">{paymentStatus}</span>
+                                    </div>
+                                    <div class="summary-item full-width">
+                                        <span class="sum-label">Rental Duration:</span>
+                                        <span class="sum-value">{formattedDates} ({rentalDays} Days)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Gateways Mock -->
+                            <div class="payment-section mb-4">
+                                <h4 class="summary-section-title">Choose Payment Method</h4>
+                                <div class="payment-grid">
+                                    
+                                    <!-- Option 1: Destination -->
+                                    <div class={paymentDestinationClass} onclick={selectPaymentDestination}>
+                                        <div class="payment-radio">
+                                            <div class="radio-circle"></div>
+                                        </div>
+                                        <div class="payment-info">
+                                            <lightning-icon icon-name="utility:money" size="small" class="payment-icon"></lightning-icon>
+                                            <div>
+                                                <p class="pay-name">Pay at Station</p>
+                                                <p class="pay-desc">Pay upon picking up the vehicle.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Option 2: UPI -->
+                                    <div class={paymentUpiClass} onclick={selectPaymentUpi}>
+                                        <div class="payment-radio">
+                                            <div class="radio-circle"></div>
+                                        </div>
+                                        <div class="payment-info">
+                                            <lightning-icon icon-name="utility:qrcode" size="small" class="payment-icon"></lightning-icon>
+                                            <div>
+                                                <p class="pay-name">UPI / QR Code</p>
+                                                <p class="pay-desc">GooglePay, PhonePe, Paytm (Demo)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Option 3: Card -->
+                                    <div class={paymentCardClass} onclick={selectPaymentCard}>
+                                        <div class="payment-radio">
+                                            <div class="radio-circle"></div>
+                                        </div>
+                                        <div class="payment-info">
+                                            <lightning-icon icon-name="utility:credit_card" size="small" class="payment-icon"></lightning-icon>
+                                            <div>
+                                                <p class="pay-name">Credit / Debit Card</p>
+                                                <p class="pay-desc">Visa, Mastercard, RuPay (Demo)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Step Navigation Footer -->
+                            <div class="step-footer mt-5">
+                                <button class="btn-outline-dark" onclick={goToPreviousStep}>&larr; Back</button>
+                                <span class="step-count">3 of 3 Steps</span>
+                                <button class="btn-primary-red pulse-effect" onclick={handleBookNow}>
+                                    <lightning-icon icon-name="utility:lock" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                                    Confirm Reservation (₹{grandTotal})
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+
+                </div>
+
+                <!-- Price Breakdown & Car Summary Sidebar Column -->
+                <div class="summary-sidebar-column">
+                    <!-- Live Car Details Display -->
+                    <div class="sidebar-car-card mb-4 animate-fade-in">
+                        <div class="sidebar-car-header">
+                            <span class="category-badge">{activeCarType}</span>
+                            <h3 class="sidebar-car-name">{activeCarName}</h3>
+                        </div>
+                        <div class="sidebar-car-img-wrap">
+                            <img src={activeCarImage} alt={activeCarName} />
+                        </div>
+                        <div class="sidebar-car-specs">
+                            <div class="spec-tag">
+                                <span>👤 {activeCarSeats} Seats</span>
+                            </div>
+                            <div class="spec-tag">
+                                <span>🛡️ Safe & Sanitized</span>
+                            </div>
+                            <div class="spec-tag text-highlight">
+                                <span>₹{activeCarPrice} / Day</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Live Fare calculation Receipt -->
+                    <div class="sidebar-receipt-card animate-fade-in">
+                        <h4 class="receipt-title">Fare Breakdown</h4>
+                        <div class="receipt-divider"></div>
+                        <ul class="fare-list">
+                            <li>
+                                <span class="lbl">Base Rent (₹{activeCarPrice} × {rentalDays} Days)</span>
+                                <span class="val">₹{baseRentalCost}</span>
+                            </li>
+                            <template if:true={extrasCost}>
+                                <li>
+                                    <span class="lbl">Premium Add-ons Subtotal</span>
+                                    <span class="val">+ ₹{extrasCost}</span>
+                                </li>
+                            </template>
+                            <li>
+                                <span class="lbl">GST & Service Fees (18% GST)</span>
+                                <span class="val">₹{taxAmount}</span>
+                            </li>
+                        </ul>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-total-row">
+                            <span class="total-label">Estimated Grand Total</span>
+                            <span class="total-value">₹{grandTotal}</span>
+                        </div>
+                        <div class="receipt-guarantee">
+                            <lightning-icon icon-name="utility:check" size="xx-small" class="guarantee-icon"></lightning-icon>
+                            <span>Price matches best available rate guarantee.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Toast Notification Integration -->
+    <template if:true={showToast}>
+        <c-custom-toast
+            title={toastTitle}
+            message={toastMessage}
+            variant={toastVariant}
+            auto-close
+            auto-close-time="4000"
+            onclose={handleCloseToast}
+        ></c-custom-toast>
+    </template>
+</template>

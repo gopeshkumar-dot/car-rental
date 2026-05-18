@@ -1,0 +1,62 @@
+<template>
+    <template if:true={singUpPage}>
+        <div class="container">
+        <div class="image-container">
+            <img src={firstp1} alt="Jeep Image"/>
+        </div>
+        <div class="form-container">
+            <h2 class="form-title">WELCOME</h2>
+            <p class="form-subtitle">Let's get you started!</p>
+            <div class="form">
+                <template if:true={isSubmitting}>
+                    <div class="spinner-wrap">
+                        <lightning-spinner size="small" alternative-text="Signing up"></lightning-spinner>
+                    </div>
+                </template>
+                <template if:true={submitStatusMessage}>
+                    <p class="submit-status">{submitStatusMessage}</p>
+                </template>
+                <lightning-input label="First name" required 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-input label="Last name"  required 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-input label="Phone" type="tel" required 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-input label="E-mail" placeholder="eg:- sksuman@gmail.com" type="email" required 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-input label="Create Password" type="password" required 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-input type="checkbox" label="I agree to the Terms and Privacy Policy" 
+                                 onchange={handleInputChange}></lightning-input>
+                <lightning-button label="Sign up" variant="brand" class="signup-button" 
+                                  onclick={handleSignUp} disabled={isSubmitting}></lightning-button>
+            </div>
+            <p class="login-link" onclick={handleLoginPage}>Already have an account? <a href="#">Log in</a>.</p>
+        </div>
+    </div>
+    </template>
+
+
+    <template if:false={singUpPage}>
+         <c-sin-up-page></c-sin-up-page>
+    </template>
+
+    <template if:true={showPremiumModal}>
+        <section class="premium-modal-backdrop" role="dialog" aria-modal="true" aria-label="Status popup">
+            <div class="premium-modal">
+                <div class="premium-modal-header">
+                    <h3>{modalTitle}</h3>
+                </div>
+                <div class="premium-modal-body">
+                    <p>{modalMessage}</p>
+                </div>
+                <div class="premium-modal-footer">
+                    <button class="premium-modal-btn" onclick={handleModalClose}>OK</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+
+
+</template>

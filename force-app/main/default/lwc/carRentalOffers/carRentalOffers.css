@@ -1,0 +1,420 @@
+/* Base styles for the component container */
+/* Target the label inside the lightning-input component */
+/* Blinking effect for the label */
+.glow{
+  animation: blinker 1s linear infinite;
+     font-size: 23px;
+    margin-top: -88px;
+    margin-bottom: 58px;
+    margin-left: 5px;
+}
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+}
+.search{
+    width:23%;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
+.slds-m-around_medium {  
+    background-color: #0f0d0c; /* Dark blue background */
+    padding: 20px;
+    border-radius: 10px;
+    color: white; /* White text color */
+    margin-top: -13px;
+}
+
+
+/* Layout item styles for vertical stacking */
+.lightning-layout-item {
+    width:100%; /* Ensure each item takes full width */
+    margin-bottom: 20px; /* Space between each card */
+}
+/* Scrollable container for the offer list */
+.offer-list-container {
+    max-height: 500px; /* Adjust the height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 10px; /* Space for scrollbar */
+}
+
+/* Add some spacing to the right to avoid overlap with the scrollbar */
+.offer-item {
+    margin-right: 10px;
+}
+
+/* booking car style */
+.slds-card {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.slds-card:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+/* booking car popup styles */
+.iconcolour:hover {
+  background-color: #fb1b22; 
+ 
+}
+
+.slds-modal__container {
+    background-color:#2E4A8A;
+    border-radius: 5px;
+    padding: 1rem;
+    max-width: 789px;
+    width: 148%;
+    margin: 0 auto;
+    height: 531px;
+    margin-top: -84px;
+    margin-left: 40px;
+}
+.slds-modal__header {
+  border-bottom: 1px solid #d8dde6;
+  padding: 0.5rem; /* Reduce padding to remove extra space */
+}
+.slds-modal__content {
+  background-color: #f4f6f9;
+  padding: 0.5rem; /* Reduce padding to remove extra space */
+  size: 50%;
+  Adjust: center;
+}
+.slds-modal__footer2{
+   margin-left: 653px;
+}
+.iconcolour{
+   --sds-c-icon-color-foreground-default: 	#FFFFFF;
+}
+.slds-modal {
+  width: 50%; /* Adjust width for tablets */
+  left: 55%;
+  top: 45%;
+  transform: translate(-50%, -30%); 
+}
+.slds-button{
+  height: 12px;
+  width: 1px;
+  margin-left: 10px;
+}
+
+
+/* Card styles */
+.slds-box {
+    background-color: #fff;
+ /* Slightly darker blue for the cards */
+    border: none;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for each card */
+    text-align: center; /* Center the text and button */
+}
+
+/* Circular image styling */
+.offer-image {
+    width: 328px;
+    height: 195px;
+    /* border-radius: 50%; Circular image */
+    margin-bottom: 15px; /* Margin at the bottom */
+}
+
+/* Text styling */
+h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+/* Button styling */
+.lightning-button {
+    display: block;
+    width: 100%;
+    max-width: 150px;
+    margin: 20px auto 0 auto; /* Center button */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.lightning-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+/* ****************How to rent a car*************** */
+    .steps-container {
+    padding: 20px;
+}
+
+.step {
+    text-align: center;
+        padding: 94px;
+}
+
+.step-icon {
+    margin-bottom: 50px;
+
+}
+
+.step-text {
+    font-size: 1.2rem;
+}
+
+.features-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: -40px;
+    text-align: center;
+    margin-bottom: 78px;
+}
+
+.feature {
+    width: 30%;
+}
+
+.feature h2 {
+    font-size: 1.5rem;
+    margin-top: 10px;
+}
+
+.feature p {
+    margin-top: 5px;
+}
+.h1{
+    font-size: 2em;
+    margin-left: 30%;
+    margin-bottom: -1%;
+    margin-top: 5%;
+    font-weight: bold;
+}
+
+
+ /* end how to rent car */
+ /*for multiple different laptop screen size designed.*/
+ @media(max-width:1400px){
+    .slds-box {
+    background-color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 300px;
+}
+
+ }
+
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+    .slds-m-around_medium {
+        padding: 15px;
+    }
+
+    .offer-image {
+         width: 171px;
+        height: 142px;
+        /* border-radius: 50%; */
+        margin-bottom: 7px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    .lightning-button {
+        max-width: 120px;
+        font-size: 14px;
+        padding: 8px;
+    }
+
+  .slds-box {
+    background-color: #c9cfde;
+    border: none;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 205px;
+    margin-left: 7px;
+    }
+
+    .slds-modal__container {
+         width: 198%;
+        max-width: 526px;
+        padding: 0.5rem;
+        margin-left: -92px;
+        margin-top: -4px;
+  }
+  .slds-modal__footer2{
+  margin-left: 426px;
+  }
+  .slds-modal__content {
+    padding: 0.5rem;
+  }
+  .slds-modal {
+    width: 40%; /* Adjust width for tablets */
+    left: 47%;
+    top: 35%;
+  }
+ .search{
+    width:35%;
+    }
+
+ .steps-container {
+        flex-direction: column;
+    }
+
+    .feature {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .Step1{
+        height: 12px;
+        width: 12px;
+    }
+}
+
+
+@media (max-width: 480px) {
+   /* Base styles for mobile design */
+.glow {
+  animation: blinker 1s linear infinite;
+  font-size: 23px;
+  margin-top: -88px;
+  margin-bottom: 58px;
+  margin-left: 5px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+
+.search {
+  width: 90%;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.slds-m-around_medium {
+  background-color: #0f0d0c;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  margin-top: -13px;
+}
+
+.lightning-layout-item {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.offer-list-container {
+  max-height: 282px;
+  overflow-y: auto;
+  padding-right: 10px;
+  width: 267px;
+}
+
+.offer-item {
+  margin-right: 10px;
+}
+
+.slds-box {
+  background-color: #fff;
+  border: none;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.offer-image {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+p {
+  font-size: 12px;
+}
+
+.lightning-button {
+  display: block;
+  width: 100%;
+  max-width: 100px;
+  margin: 20px auto 0 auto;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.slds-modal__container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem;
+}
+
+.slds-modal__footer2 {
+  margin-left: 426px;
+}
+
+.slds-modal__content {
+  padding: 0.5rem;
+}
+
+.slds-modal {
+  width: 75%;
+  left: 47%;
+  top: 25%;
+  transform: translate(-50%, -30%);
+}
+
+/* How to rent a car section */
+.steps-container {
+  padding: 20px;
+}
+
+.step {
+  text-align: center;
+  padding: 94px;
+}
+
+.features-container {
+  text-align: center;
+}
+
+.feature h2 {
+  font-size: 1.5rem;
+}
+}

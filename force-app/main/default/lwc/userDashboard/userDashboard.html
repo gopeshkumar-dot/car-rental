@@ -1,0 +1,122 @@
+<template>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="user-profile-summary">
+                <div class="avatar-circle">
+                    <span class="avatar-initials">{userInitials}</span>
+                </div>
+                <h2 class="user-name">{userName}</h2>
+                <p class="user-email">{userEmail}</p>
+            </div>
+            <nav class="sidebar-menu">
+                <button class={getTabClassProfile} data-tab="profile" onclick={handleTabChange}>
+                    <lightning-icon icon-name="utility:user" size="small" class="tab-icon"></lightning-icon>
+                    Profile Settings
+                </button>
+                <button class={getTabClassPassword} data-tab="password" onclick={handleTabChange}>
+                    <lightning-icon icon-name="utility:lock" size="small" class="tab-icon"></lightning-icon>
+                    Update Password
+                </button>
+                <button class={getTabClassBooking} data-tab="booking" onclick={handleTabChange}>
+                    <lightning-icon icon-name="utility:event" size="small" class="tab-icon"></lightning-icon>
+                    My Bookings
+                </button>
+                <button class={getTabClassPostTestimonial} data-tab="post_testimonial" onclick={handleTabChange}>
+                    <lightning-icon icon-name="utility:edit" size="small" class="tab-icon"></lightning-icon>
+                    Post Testimonial
+                </button>
+                <button class={getTabClassMyTestimonial} data-tab="my_testimonial" onclick={handleTabChange}>
+                    <lightning-icon icon-name="utility:comments" size="small" class="tab-icon"></lightning-icon>
+                    My Testimonials
+                </button>
+                <button class="sidebar-tab tab-logout" onclick={handleLogout}>
+                    <lightning-icon icon-name="utility:logout" size="small" class="tab-icon"></lightning-icon>
+                    Sign Out
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-main">
+            <!-- Profile Settings Tab -->
+            <template if:true={isProfileTab}>
+                <div class="tab-content card slide-up">
+                    <h3 class="section-title">Profile Settings</h3>
+                    <p class="section-subtitle">Manage your personal information and contact details.</p>
+                    <div class="form-grid">
+                        <lightning-input label="First Name" value={firstName} onchange={handleInputChange} name="firstName"></lightning-input>
+                        <lightning-input label="Last Name" value={lastName} onchange={handleInputChange} name="lastName"></lightning-input>
+                        <lightning-input label="Email" type="email" value={userEmail} disabled class="input-disabled"></lightning-input>
+                        <lightning-input label="Phone Number" type="tel" value={phone} onchange={handleInputChange} name="phone"></lightning-input>
+                    </div>
+                    <div class="action-footer">
+                        <button class="btn-primary" onclick={saveProfile}>Save Changes</button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Update Password Tab -->
+            <template if:true={isPasswordTab}>
+                <div class="tab-content card slide-up">
+                    <h3 class="section-title">Update Password</h3>
+                    <p class="section-subtitle">Ensure your account stays secure by updating your password regularly.</p>
+                    <div class="form-grid-single">
+                        <lightning-input label="Current Password" type="password" name="currentPassword"></lightning-input>
+                        <lightning-input label="New Password" type="password" name="newPassword"></lightning-input>
+                        <lightning-input label="Confirm New Password" type="password" name="confirmPassword"></lightning-input>
+                    </div>
+                    <div class="action-footer">
+                        <button class="btn-primary" onclick={updatePassword}>Update Password</button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- My Bookings Tab -->
+            <template if:true={isBookingTab}>
+                <div class="tab-content card slide-up">
+                    <h3 class="section-title">My Bookings</h3>
+                    <p class="section-subtitle">View your past, active, and upcoming car rentals.</p>
+                    <div class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <lightning-icon icon-name="utility:event" size="large" class="empty-icon"></lightning-icon>
+                        </div>
+                        <p class="empty-title">No Active Bookings</p>
+                        <p class="empty-subtitle">You have no active bookings at the moment.</p>
+                        <button class="btn-secondary" onclick={goToCars}>Browse Cars</button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Post Testimonial Tab -->
+            <template if:true={isPostTestimonialTab}>
+                <div class="tab-content card slide-up">
+                    <h3 class="section-title">Post a Testimonial</h3>
+                    <p class="section-subtitle">Share your experience with Safar Sathi Car Rental.</p>
+                    <div class="form-grid-single">
+                        <lightning-input label="Title" name="testimonialTitle" placeholder="Sum up your experience..."></lightning-input>
+                        <lightning-textarea label="Your Experience" name="testimonialContent" placeholder="Tell us how we did..."></lightning-textarea>
+                    </div>
+                    <div class="action-footer">
+                        <button class="btn-primary" onclick={postTestimonial}>Submit Testimonial</button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- My Testimonial Tab -->
+            <template if:true={isMyTestimonialTab}>
+                <div class="tab-content card slide-up">
+                    <h3 class="section-title">My Testimonials</h3>
+                    <p class="section-subtitle">Review the feedback you have provided to us.</p>
+                    <div class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <lightning-icon icon-name="utility:comments" size="large" class="empty-icon"></lightning-icon>
+                        </div>
+                        <p class="empty-title">No Testimonials Yet</p>
+                        <p class="empty-subtitle">You haven't posted any testimonials yet.</p>
+                    </div>
+                </div>
+            </template>
+        </main>
+    </div>
+</template>

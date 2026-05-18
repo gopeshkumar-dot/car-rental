@@ -1,0 +1,375 @@
+<template>
+    <div class="main-wrapper slds-p-around_medium">
+        
+        <!-- Header Section -->
+        <div class="header-banner slds-grid slds-grid_align-spread slds-m-bottom_medium">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <lightning-icon icon-name="utility:image" size="small" class="slds-m-right_small"></lightning-icon>
+                <h1 class="slds-text-heading_medium fw-bold">Upload Car Media</h1>
+            </div>
+            <!-- Header Right Buttons -->
+            <div>
+                <button type="button" class={submitButtonClass} onclick={handleSubmit} disabled={submitDisabled} title="Confirm selected media and sync to Google Drive">
+                    Submit <span class="arrow-icon">&#x2197;</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Central Upload Zone -->
+        <div class="upload-zone dc-upload-zone-wrap slds-m-bottom_large slds-p-around_large slds-text-align_center slds-m-horizontal_medium">
+            <template if:true={isUploading}>
+                <div class="dc-busy-shade" role="status" aria-live="polite">
+                    <div class="dc-spinner-stack">
+                        <div class="dc-spinner-pulse dc-spinner-pulse--md">
+                            <div class="dc-spinner dc-spinner--md" aria-hidden="true"></div>
+                        </div>
+                        <p class="dc-spinner-stack__label">Uploading &amp; analyzing</p>
+                        <p class="dc-spinner-stack__hint">Validating media and saving to Salesforce…</p>
+                    </div>
+                </div>
+            </template>
+            <lightning-icon icon-name="utility:upload" size="large" class="upload-cloud-icon slds-m-bottom_x-small"></lightning-icon>
+            <p class="slds-text-heading_small slds-m-top_xx-small fw-bold upload-title">
+                <strong style="color: #1a202c;">Upload from</strong> your images, videos and documents here
+            </p>
+            
+            <div class="slds-m-top_medium buttons-row slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+                <button type="button" class={computerButtonClass} onclick={triggerFileInput} disabled={isUploading}>
+                    <lightning-icon icon-name="utility:upload" size="small" class="btn-inline-icon slds-m-right_x-small"></lightning-icon>
+                    Upload from Computer
+                </button>
+                <button type="button" class={driveButtonClass} onclick={openDriveModal} disabled={driveImportDisabled} title="Pick files from your linked Google Drive folder">
+                    <svg class="g-drive-logo slds-m-right_x-small" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                        <path fill="#1DA462" d="M8 14h8l-4-7-4 7z"/>
+                        <path fill="#FFC107" d="M4 15l4 6h12l-4-6H4z"/>
+                        <path fill="#4285F4" d="M12 7h8l4 7H8l4-7z"/>
+                    </svg>
+                    Import from Google Drive
+                </button>
+            </div>
+            
+            <input 
+                type="file" 
+                accept=".jpg,.jpeg,.png,.webp,.pdf,.mp4" 
+                multiple 
+                onchange={handleFileChange} 
+                class="hidden-file-input slds-hide" 
+            />
+
+            <!-- Helper Text Limits -->
+            <div class="slds-m-top_medium slds-text-color_weak info-text-pipe">
+                Supported: JPG, PNG, WEBP, PDF, MP4 <span class="pipe">|</span> Max Size: {maxSizeMB}MB <span class="pipe">|</span> Max Files: {maxFilesAllowed}
+            </div>
+        </div>
+
+        <!-- Progress and Stats Bar -->
+        <div class="stats-header slds-m-bottom_small slds-m-horizontal_medium">
+            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                <h2 class="total-media-text fw-bold">Total Media: {imageCount} / {maxFilesAllowed}</h2>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style={progressBarStyle}></div>
+            </div>
+            <template if:true={isRefreshingGrid}>
+                <div class="stats-sync-row" role="status" aria-live="polite">
+                    <div class="dc-spinner dc-spinner--xs" aria-hidden="true"></div>
+                    <span>Syncing gallery with Salesforce…</span>
+                </div>
+            </template>
+        </div>
+        
+        <!-- Reorder Warning Text -->
+        <p class="reorder-text slds-m-bottom_medium slds-text-color_weak slds-m-horizontal_medium">
+            <lightning-icon icon-name="utility:chevronleft" size="xx-small" class="chevron-icon slds-m-right_xx-small"></lightning-icon>
+            Drag images to reorder – First media will be the cover image. Use the checkboxes to choose what is finalized to Google Drive when you submit.
+        </p>
+
+        <!-- Dynamic Warning Message -->
+        <template if:true={removedFilesMessage}>
+            <div class="slds-m-bottom_medium slds-m-horizontal_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert">
+                    <span class="slds-assistive-text">warning</span>
+                    <h2>{removedFilesMessage}</h2>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading State -->
+        <template if:true={isLoading}>
+            <div class="dc-page-load-panel slds-m-top_medium" role="status" aria-live="polite">
+                <div class="dc-spinner-stack">
+                    <div class="dc-spinner-pulse dc-spinner-pulse--lg">
+                        <div class="dc-spinner dc-spinner--lg" aria-hidden="true"></div>
+                    </div>
+                    <p class="dc-spinner-stack__label">Loading property media</p>
+                    <p class="dc-spinner-stack__hint">Fetching images and settings from Salesforce…</p>
+                </div>
+            </div>
+        </template>
+        <template if:false={hasRecordContext}>
+            <div class="slds-m-top_medium slds-m-horizontal_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_info" role="status">
+                    <span class="slds-assistive-text">info</span>
+                    <h2>Save basic property details first. Media upload will unlock after record creation.</h2>
+                </div>
+            </div>
+        </template>
+
+        <!-- Grid Cards Section -->
+        <template if:false={isLoading}>
+            <div class="grid-container slds-m-horizontal_medium slds-m-bottom_large">
+                <template for:each={allImages} for:item="img" for:index="index">
+                    <div key={img.Id} 
+                         class={img.cardClasses} 
+                         draggable="true" 
+                         ondragstart={handleDragStart} 
+                         ondragover={handleDragOver} 
+                         ondrop={handleDrop} 
+                         data-index={index}>
+                        
+                        <div class="card-image-box">
+                            <!-- Top Floating Actions & Badges -->
+                            <div class="card-overlay-actions slds-grid slds-grid_align-spread">
+                                <div class="drag-handle-box" title="Drag to reorder">
+                                    <lightning-icon icon-name="utility:drag_and_drop" size="xx-small"></lightning-icon>
+                                </div>
+                                <div class="right-actions slds-grid">
+                                    <button class="icon-circle-btn lock-toggle-btn slds-m-right_xx-small"
+                                        data-public={img.showAsPublic} 
+                                        onclick={handleTogglePrivacy}
+                                        data-id={img.Id}
+                                        title={img.privacyLabel}>
+                                        <lightning-icon icon-name={img.lockIcon} size="x-small" class={img.lockClass}></lightning-icon>
+                                    </button>
+                                    <button class="icon-circle-btn delete-btn" data-id={img.Id} onclick={handleDeleteImage} title="Delete Media">
+                                        <div class="delete-icon-wrapper">
+                                            <lightning-icon icon-name="utility:close" size="x-small" class="icon-white"></lightning-icon>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <template if:true={img.isCover}>
+                                <div class="orange-cover-banner slds-grid slds-grid_vertical-align-center">
+                                    <lightning-icon icon-name="utility:favorite" size="xx-small" class="star-white slds-m-right_x-small"></lightning-icon>
+                                    <span class="fw-bold">Cover Image</span>
+                                    <div class="slds-col_bump-left check-circle-bg">
+                                        <lightning-icon icon-name="utility:check" size="xx-small" class="check-orange"></lightning-icon>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- Processing State Overlay -->
+                            <template if:true={img.isProcessing}>
+                                <div class="processing-overlay">
+                                    <div class="dc-spinner-stack">
+                                        <div class="dc-spinner-pulse dc-spinner-pulse--sm">
+                                            <div class="dc-spinner dc-spinner--sm" aria-hidden="true"></div>
+                                        </div>
+                                        <p class="dc-spinner-stack__label" style="font-size: 12px;">Processing…</p>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- Display File (PDF, MP4, or IMG) -->
+                            <template if:true={img.isPdf}>
+                                <a href={img.displayUrl} target="_blank" class="pdf-placeholder slds-grid slds-grid_align-center slds-grid_vertical-align-center slds-grid_vertical slds-p-around_medium" title="Click to view PDF">
+                                    <lightning-icon icon-name="doctype:pdf" size="large"></lightning-icon>
+                                    <div class="doc-view-text slds-m-top_x-small">Click to Open</div>
+                                </a>
+                            </template>
+                                <template if:false={img.isPdf}>
+                                    <template if:true={img.isVideo}>
+                                        <a href={img.displayUrl} target="_blank" class="image-link-wrapper" title="Play Video in full screen">
+                                            <video src={img.previewVideoUrl} class="preview-media hover-zoom" preload="metadata"></video>
+                                            <div class="play-btn-overlay">
+                                                <lightning-icon icon-name="utility:play" size="medium"></lightning-icon>
+                                            </div>
+                                        </a>
+                                    </template>
+                                    <template if:false={img.isVideo}>
+                                        <a href={img.displayUrl} target="_blank" class="image-link-wrapper" title="Click to view full size">
+                                            <img src={img.displayUrl} alt="Preview" class="preview-media hover-zoom" />
+                                        </a>
+                                    </template>
+                                </template>
+                            
+                            <!-- Filename semi-transparent bar -->
+                            <div class="filename-bar slds-truncate" title={img.Name}>{img.Name}</div>
+                        </div>
+
+                        <!-- Footer Details -->
+                        <div class="card-footer-data slds-p-around_small">
+                            <div class="include-finalize-row slds-m-bottom_x-small">
+                                <label class="include-label">
+                                    <input type="checkbox" class="include-checkbox" data-id={img.Id} checked={img.includeInSubmit} onchange={toggleSubmissionIncluded} />
+                                    <span>Include in Drive submit</span>
+                                </label>
+                                <template if:true={img.driveStatusLabel}>
+                                    <span class="drive-status-pill" title="Google Drive sync status">{img.driveStatusLabel}</span>
+                                </template>
+                            </div>
+                            <!-- Privacy & Role Status -->
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                <span class={img.privacyBadgeClass}>{img.privacyLabel}</span>
+                                <span class="secondary-label">{img.roleLabel}</span>
+                            </div>
+                            
+                            <!-- Ownership Dropdown Row -->
+                            <div class="dropdown-wrapper">
+                                <div class="lock-dropdown-icon">
+                                    <lightning-icon icon-name="utility:lock" size="x-small" class="lock-gray"></lightning-icon>
+                                </div>
+                                <select class="owner-dropdown" data-id={img.Id} onchange={handleOwnerChange}>
+                                     <option value="Agent" selected={img.isOwnerAgent}>Agent</option>
+                                     <option value="Owner" selected={img.isOwnerOwner}>Owner</option>
+                                     <option value="Client" selected={img.isOwnerClient}>Client</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Mockup Add Media Placeholder Slot -->
+                <template if:false={isMaxReached}>
+                    <div class="add-media-card slds-text-align_center slds-grid slds-grid_vertical slds-grid_align-center slds-grid_vertical-align-center" onclick={triggerFileInput}>
+                        <lightning-icon icon-name="utility:add" size="large" class="plus-icon slds-m-bottom_small"></lightning-icon>
+                        <div class="fw-bold slds-text-heading_small slds-m-bottom_xxx-small">Add Media</div>
+                        <div class="slds-text-color_weak slds-text-body_small">Images, Videos<br/>& Documents</div>
+                        <div class="slots-available slds-m-top_medium">{slotsLeft} slots left</div>
+                    </div>
+                </template>
+
+            </div>
+        </template>
+        
+        <!-- Finalize to Google Drive -->
+        <template if:true={showFinalizeModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open custom-modal">
+                <div class="slds-modal__container custom-modal-container finalize-modal-container">
+                    <div class="slds-modal__content custom-modal-content dc-dialog-busy-root slds-is-relative">
+                        <p class="modal-title slds-m-bottom_small slds-m-top_small">Finalize to Google Drive?</p>
+                        <p class="modal-body-text slds-m-bottom_medium">
+                            {selectedForSubmitCount} file(s) will be kept and finalized to Google Drive where needed. Unchecked items will be removed from this property.
+                        </p>
+                        <div class="modal-actions slds-grid slds-grid_align-end">
+                            <button type="button" class="custom-ok-btn slds-m-right_medium" onclick={confirmFinalizeToDrive} disabled={isFinalizing}>Confirm</button>
+                            <button type="button" class="custom-cancel-btn" onclick={closeFinalizeModal} disabled={isFinalizing}>Cancel</button>
+                        </div>
+                        <template if:true={isFinalizing}>
+                            <div class="dc-dialog-busy-overlay" role="status" aria-live="polite">
+                                <div class="dc-spinner-stack">
+                                    <div class="dc-spinner-pulse dc-spinner-pulse--md">
+                                        <div class="dc-spinner dc-spinner--md" aria-hidden="true"></div>
+                                    </div>
+                                    <p class="dc-spinner-stack__label">Finalizing to Google Drive</p>
+                                    <p class="dc-spinner-stack__hint">Updating records and queueing uploads…</p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Google Drive folder picker -->
+        <template if:true={driveModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open custom-modal">
+                <div class="slds-modal__container drive-modal-container">
+                    <header class="slds-modal__header drive-modal-header">
+                        <button type="button" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeDriveModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close" variant="inverse" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-text-heading_medium">Google Drive folder</h2>
+                        <p class="slds-text-body_small slds-m-top_xx-small">Select files to add to this property (same folder as your linked Account or Property).</p>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium drive-modal-body dc-modal-body-host">
+                        <template if:true={driveLoading}>
+                            <div class="slds-align_absolute-center slds-p-around_large" role="status" aria-live="polite">
+                                <div class="dc-spinner-stack">
+                                    <div class="dc-spinner-pulse dc-spinner-pulse--md">
+                                        <div class="dc-spinner dc-spinner--md" aria-hidden="true"></div>
+                                    </div>
+                                    <p class="dc-spinner-stack__label">Loading Google Drive folder</p>
+                                    <p class="dc-spinner-stack__hint">Reading files from your linked folder…</p>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:true={driveImporting}>
+                            <div class="dc-busy-shade" role="status" aria-live="polite">
+                                <div class="dc-spinner-stack">
+                                    <div class="dc-spinner-pulse dc-spinner-pulse--sm">
+                                        <div class="dc-spinner dc-spinner--sm" aria-hidden="true"></div>
+                                    </div>
+                                    <p class="dc-spinner-stack__label">Importing from Drive</p>
+                                    <p class="dc-spinner-stack__hint">Linking selected files to this property…</p>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={driveLoading}>
+                            <template if:true={driveFiles.length}>
+                                <ul class="drive-file-list">
+                                    <template for:each={driveFiles} for:item="df">
+                                        <li key={df.id} class="drive-file-row">
+                                            <template if:false={df.isGoogleDoc}>
+                                                <input type="checkbox" class="drive-file-check" data-id={df.id} checked={df.picked} onchange={toggleDrivePick} />
+                                            </template>
+                                            <span class="drive-file-name slds-truncate" title={df.name}>{df.name}</span>
+                                            <template if:true={df.isGoogleDoc}>
+                                                <span class="drive-native-hint">Native Google file — export as PDF or image to import</span>
+                                            </template>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={driveFiles.length}>
+                                <p class="slds-text-color_weak">No files found in the linked folder.</p>
+                            </template>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer slds-grid slds-grid_align-spread">
+                        <button type="button" class="slds-button slds-button_neutral" onclick={closeDriveModal} disabled={driveImporting}>Cancel</button>
+                        <button type="button" class="slds-button slds-button_brand" onclick={importSelectedFromDrive} disabled={driveImporting}>
+                            <template if:false={driveImporting}>Import selected</template>
+                            <template if:true={driveImporting}>
+                                <span class="dc-btn-spinner-row">
+                                    <span class="dc-spinner dc-spinner--xs" aria-hidden="true"></span>
+                                    <span>Importing…</span>
+                                </span>
+                            </template>
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Custom Delete Modal (Figma Style) -->
+        <template if:true={showDeleteModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open custom-modal">
+                <div class="slds-modal__container custom-modal-container">
+                    <div class="slds-modal__content custom-modal-content slds-is-relative">
+                        <p class="modal-title slds-m-bottom_large slds-m-top_small">Delete this file?</p>
+                        <div class="modal-actions slds-grid slds-grid_align-end">
+                            <button type="button" class="custom-ok-btn slds-m-right_medium" onclick={confirmDelete} disabled={isDeleting}>OK</button>
+                            <button type="button" class="custom-cancel-btn" onclick={closeDeleteModal} disabled={isDeleting}>Cancel</button>
+                        </div>
+                        <template if:true={isDeleting}>
+                            <div class="dc-dialog-busy-overlay" role="status" aria-live="polite">
+                                <div class="dc-spinner-stack">
+                                    <div class="dc-spinner-pulse dc-spinner-pulse--sm">
+                                        <div class="dc-spinner dc-spinner--sm" aria-hidden="true"></div>
+                                    </div>
+                                    <p class="dc-spinner-stack__label">Removing file…</p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+    </div>
+</template>

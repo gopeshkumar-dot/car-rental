@@ -1,0 +1,116 @@
+<template>
+ <lightning-card>
+    <div class="slds-m-around_medium">
+        <lightning-input type="search" label="Search Offers" placeholder="Search car" onchange={handleSearch} class="search"></lightning-input>
+        <h2 style="color:red" class="glow">Car Rental Offers</h2>
+        <!-- Scrollable container for the offers -->
+        <div class="offer-list-container">
+            <lightning-layout vertical-align="start" multiple-rows>
+                <template if:true={filteredOffers}>
+                    <template for:each={filteredOffers} for:item="offer">
+                        <lightning-layout-item key={offer.id} class="offer-item">
+                            <div class="slds-box slds-theme_default offer-card">
+                                <img src={offer.imageURL} alt="Car Image" class="offer-image"/>
+                                <h2>{offer.name}</h2>
+                                <p>{offer.description}</p>
+                                <p><strong>Price:</strong> ₹ {offer.price} per day</p>
+                                <lightning-button label="Book Now" onclick={handleBookNow} data-id={offer.id}></lightning-button>
+                            </div>
+                        </lightning-layout-item>
+                    </template>
+                </template>
+                <template if:true={noOffersFound}>
+                    <p>No offers found.</p>
+                </template>
+            </lightning-layout>
+        </div>
+    </div>
+</lightning-card>
+
+
+      <template if:true={ShowBookingPage}>
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal2}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" size="small" class="iconcolour"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 class="slds-text-heading_medium">Car Details</h2>
+            </header>
+            <div class="slds-modal__content2">
+                <!-- Include your child component here -->
+               <c-booking_page></c-booking_page>
+            </div>
+            <footer class="slds-modal__footer2">
+                <lightning-button variant="neutral" label="Close" onclick={closeModal2}></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+     </template>
+    <!-- ************How to rent a car*************** -->
+    <div class="steps-container">
+         <h1> How to Get Rental Cars in Bihar with Carrental? </h1>
+        <lightning-layout>
+            <lightning-layout-item size="3" class="step">
+                <div class="step-icon">
+                    <img src={Step1} alt="Step1" class="Step1">
+                </div>
+                <div class="step-text">
+                    <a href="https://zoomcar.com" target="_blank">Log onto carrental.com</a>
+                    <p>or use the app</p>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" class="step">
+                <div class="step-icon">
+                    <img src={Step2} alt="Step 2">
+                </div>
+                <div class="step-text">
+                    <p>Select city, date and time</p>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" class="step">
+                <div class="step-icon">
+                    <img src={Step3} alt="Step 3">
+                </div>
+                <div class="step-text">
+                    <p>Pick a car of your choice at 0 security deposit</p>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" class="step">
+                <div class="step-icon">
+                    <img src={car} alt="Step 4">
+                </div>
+                <div class="step-text">
+                    <p>carrental with unlimited KMs</p>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+
+    <!-- Optional section below the steps -->
+    <div class="features-container">
+        <div class="feature">
+            <lightning-icon icon-name="utility:travel_and_places" size="large"></lightning-icon>
+            <h2>Accessible</h2>
+            <p>There’s always a carental near you</p>
+        </div>
+
+        <div class="feature">
+            <lightning-icon icon-name="utility:lock" size="large"></lightning-icon>
+            <h2>Secure</h2>
+            <p>Pay 0 security deposit, get unlimited KMs</p>
+        </div>
+
+        <div class="feature">
+            <lightning-icon icon-name="utility:date_time" size="large"></lightning-icon>
+            <h2>Convenient</h2>
+            <p>From Hatchbacks to SUVs, choose from 500+ cars</p>
+        </div>
+    </div>
+
+</template>

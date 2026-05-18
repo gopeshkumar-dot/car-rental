@@ -1,0 +1,415 @@
+/* ============================================================
+   Footer Container
+   ============================================================ */
+:host {
+    display: block;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+.footer-container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 40px 0 0 0;
+    font-family: 'Inter', Arial, sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   Footer Main Content Row (4 columns)
+   ============================================================ */
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px 30px 30px;
+    gap: 30px;
+}
+
+/* ============================================================
+   Each Column Section
+   ============================================================ */
+.footer-section {
+    flex: 1 1 200px;
+    min-width: 180px;
+    max-width: 280px;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Brand column — slightly wider */
+.footer-section:first-child {
+    flex: 1.2 1 220px;
+    max-width: 300px;
+}
+
+/* Map column — slightly wider */
+.footer-section.map-section {
+    flex: 1.4 1 240px;
+    max-width: 320px;
+}
+
+/* ============================================================
+   Logo
+   ============================================================ */
+.footer-logo {
+    max-width: 140px;
+    height: auto;
+    margin-bottom: 12px;
+    display: block;
+}
+.logo-container {
+    width: 100%;
+    max-width: 180px;  /* Allow the logo to be slightly larger and responsive */
+    margin-bottom: 16px;
+    display: block;
+    background-color: #ffffff; /* Add white background so transparent logos look right */
+    border-radius: 6px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* Hide the erroneous placeholder text */
+.logo-container + .social-icons {
+    display: none;
+}
+
+
+/* ============================================================
+   Brand Tagline / Description
+   ============================================================ */
+.section-description {
+    color: #b0b0b0;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    margin: 0 0 16px 0;
+}
+
+/* ============================================================
+   Section Headings (Quick Links, Subscribe, Our Location)
+   ============================================================ */
+.section-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 14px 0;
+    padding: 0;
+}
+
+/* ============================================================
+   Navigation Links (Quick Links column)
+   ============================================================ */
+.footer-item {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.footer-item a {
+    color: #b0b0b0;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.footer-item a:hover {
+    color: #ff4d4d;
+}
+
+/* ============================================================
+   Subscribe Section
+   ============================================================ */
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.newsletter-input {
+    --slds-c-input-color-background: #2b2b2b;
+    --slds-c-input-text-color: #ffffff;
+    --slds-c-input-placeholder-color-text: #888888;
+    --slds-c-input-radius-border: 4px;
+    --slds-c-input-color-border: #444444;
+    --slds-c-input-sizing-height: 38px;
+    width: 100%;
+}
+
+.subscribe-btn {
+    background-color: #e03030;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.25s ease, transform 0.15s ease;
+    width: 100%;
+    letter-spacing: 0.02em;
+}
+
+.subscribe-btn:hover {
+    background-color: #c72828;
+    transform: translateY(-1px);
+}
+
+.subscribe-btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================================
+   Our Location Section — contact details
+   ============================================================ */
+.map-section p {
+    color: #b0b0b0;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0 0 8px 0;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+}
+
+.contact-item lightning-icon {
+    margin-top: 2px;
+}
+
+/* ============================================================
+   Map Container
+   ============================================================ */
+.map-container {
+    height: 130px;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #3a3a3a;
+    margin-top: 10px;
+}
+
+lightning-map {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ============================================================
+   Bottom Bar
+   ============================================================ */
+.footer-bottom {
+    background-color: #111111;
+    border-top: 1px solid #2e2e2e;
+    padding: 12px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.footer-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.footer-copyright {
+    color: #777777;
+    font-size: 0.78rem;
+}
+
+.footer-legal-links {
+    display: flex;
+    gap: 16px;
+}
+
+.footer-legal-links a {
+    color: #999999;
+    text-decoration: none;
+    font-size: 0.78rem;
+    transition: color 0.2s ease;
+}
+
+.footer-legal-links a:hover {
+    color: #ffffff;
+}
+
+/* ============================================================
+   Social Icons Row
+   ============================================================ */
+.social-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #2e2e2e;
+    border: 1px solid #3e3e3e;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background-color: #e03030;
+    border-color: #e03030;
+}
+
+/* ============================================================
+   Utility — hide empty newsletter-note if used
+   ============================================================ */
+.newsletter-note {
+    font-size: 0.75rem;
+    color: #666666;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+/* ============================================================
+   Responsive - Tablet & Smaller Desktop (max-width: 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+    .footer-content {
+        padding: 0 20px 30px 20px;
+        gap: 30px;
+    }
+    
+    .footer-section,
+    .footer-section:first-child,
+    .footer-section.map-section {
+        flex: 1 1 calc(50% - 30px);
+        min-width: 250px;
+        max-width: calc(50% - 15px);
+    }
+}
+
+/* ============================================================
+   Responsive - Mobile (max-width: 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 28px;
+        padding: 0 20px 24px 20px;
+    }
+
+    .footer-section,
+    .footer-section:first-child,
+    .footer-section.map-section {
+        max-width: 100%;
+        flex: 1 1 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-logo {
+        margin: 0 auto 12px auto;
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+
+    .contact-item {
+        justify-content: center;
+    }
+
+    .footer-bottom {
+        padding: 16px 20px;
+    }
+
+    .newsletter-form {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .footer-bottom-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .footer-legal-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .map-container {
+        height: 180px;
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   Responsive - Small Mobile (max-width: 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    .footer-container {
+        padding-top: 30px;
+    }
+
+    .footer-content {
+        padding: 0 16px 20px 16px;
+        gap: 24px;
+    }
+
+    .footer-logo {
+        max-width: 120px;
+    }
+
+    .section-title {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+
+    .social-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .subscribe-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .footer-bottom {
+        padding: 12px 16px;
+    }
+}

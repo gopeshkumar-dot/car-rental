@@ -1,0 +1,260 @@
+<template>
+    <template if:false={showContact}>
+        <div class="safar-sathi-container">
+        <!-- 2. Hero Banner Section -->
+        <!-- 2. Hero Banner Section -->
+        <div class="slider">
+            <img id="img-1" src={homePageImage} alt="Image 1"/>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-6 hero-content">
+                        <span class="badge-premium mb-3">Premium Car Rental</span>
+                        <h1 class="hero-title">Drive Your Journey With <span class="text-primary-red">Safar Sathi</span></h1>
+                        <p class="hero-subtitle">Reliable, Affordable & Premium Car Rental Services for all your travel needs.</p>
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="#fleet" class="btn btn-primary-red btn-lg">View Cars</a>
+                            <button class="btn btn-outline-light btn-lg" onclick={openContact}>Contact Us</button>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Dynamic Booking Search Form -->
+        <!-- <section id="booking" class="booking-section">
+            <div class="container">
+                <div class="booking-card glass-panel">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Pickup Location</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="City or Airport">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Pickup Date</label>
+                            <div class="input-group">
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Return Date</label>
+                            <div class="input-group">
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Car Type</label>
+                            <select class="form-select" onchange={handleCarTypeChange}>
+                                <option value="All">All Types</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Luxury">Luxury</option>
+                                <option value="Hatchback">Hatchback</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button class="btn btn-primary-red w-100 h-100 py-2" onclick={handleSearch}>Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- 4. Why Choose Us Section -->
+        <section id="about" class="why-choose-us section-padding">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <span class="text-primary-red fw-bold">OUR ADVANTAGES</span>
+                    <h2 class="display-5 fw-bold mt-2">Why Choose Us</h2>
+                </div>
+                <div class="row g-4 flex-container-row">
+                    <div class="col-lg-3 col-md-6 flex-item">
+                        <div class="feature-card text-center">
+                            <div class="icon-box">W</div>
+                            <h4>Affordable Prices</h4>
+                            <p>Best competitive rates in the market with no hidden charges.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 flex-item">
+                        <div class="feature-card text-center">
+                            <div class="icon-box">S</div>
+                            <h4>Safe & Secure</h4>
+                            <p>Fully insured and sanitized vehicles for your safety.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 flex-item">
+                        <div class="feature-card text-center">
+                            <div class="icon-box">L</div>
+                            <h4>Luxury Cars</h4>
+                            <p>Wide range of premium and well-maintained luxury cars.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 flex-item">
+                        <div class="feature-card text-center">
+                            <div class="icon-box">C</div>
+                            <h4>24/7 Support</h4>
+                            <p>Round the clock customer support for all your needs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Dynamic Car Listing Section -->
+        <section id="fleet" class="fleet-section section-padding bg-light">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <span class="text-primary-red fw-bold">OUR FLEET</span>
+                    <h2 class="display-5 fw-bold mt-2">Explore Our Top Deals</h2>
+                </div>
+                
+                <template if:true={isLoading}>
+                    <div class="text-center loader-container py-5">
+                        <div class="spinner-border text-primary-red" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:false={isLoading}>
+                    <div class="row g-4 flex-container-row">
+                        <template for:each={filteredCars} for:item="car">
+                            <div key={car.id} class="col-lg-4 col-md-6 mb-4 flex-item">
+                                <div class="car-card h-100">
+                                    <div class="car-img-wrap">
+                                        <img src={car.image} alt={car.name} />
+                                    </div>
+                                    <div class="car-details">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h3 class="car-title m-0">{car.name}</h3>
+                                            <span class="badge bg-light text-dark border">{car.type}</span>
+                                        </div>
+                                        <div class="car-price">
+                                            ₹{car.price} <span>/ Day</span>
+                                        </div>
+                                        <div class="car-features">
+                                            <div class="car-feature">
+                                                {car.fuel}
+                                            </div>
+                                            <div class="car-feature">
+                                                {car.seats} Seats
+                                            </div>
+                                            <div class="car-feature">
+                                                {car.transmission}
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary-red w-100 fw-bold" onclick={handleBookCar} data-id={car.id}>Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={filteredCars.length}>
+                            <div class="col-12 text-center py-5">
+                                <h4>No cars found for this category.</h4>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                
+                <div class="text-center mt-5">
+                    <a href="#" class="btn btn-outline-dark btn-lg px-5 rounded-pill">View All Cars</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Services Section -->
+        <section id="services" class="services-section section-padding">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <span class="text-primary-red fw-bold">WHAT WE OFFER</span>
+                    <h2 class="display-5 fw-bold mt-2">Our Premium Services</h2>
+                </div>
+                <div class="row g-4 flex-container-row">
+                    <div class="col-lg-4 col-md-6 flex-item">
+                        <div class="service-card">
+                            <div class="service-img-wrap">
+                                <div class="service-img bg-airport"></div>
+                            </div>
+                            <div class="service-content">
+                                <h4>Airport Pickup & Drop</h4>
+                                <p>Timely and comfortable airport transfers.</p>
+                                <a href="#" class="read-more">Read More &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 flex-item">
+                        <div class="service-card">
+                            <div class="service-img-wrap">
+                                <div class="service-img bg-wedding"></div>
+                            </div>
+                            <div class="service-content">
+                                <h4>Wedding Car Rental</h4>
+                                <p>Make your special day elegant with our luxury fleet.</p>
+                                <a href="#" class="read-more">Read More &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 flex-item">
+                        <div class="service-card">
+                            <div class="service-img-wrap">
+                                <div class="service-img bg-outstation"></div>
+                            </div>
+                            <div class="service-content">
+                                <h4>Outstation Trip</h4>
+                                <p>Safe and comfortable outstation journeys.</p>
+                                <a href="#" class="read-more">Read More &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Statistics Counter Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="row g-4 text-center flex-container-row">
+                    <template for:each={stats} for:item="stat">
+                        <div key={stat.id} class="col-md-3 col-6 flex-item">
+                            <div class="stat-item">
+                                <h2 class="counter">{stat.count}</h2>
+                                <template if:true={stat.showPlus}>
+                                    <span class="plus">+</span>
+                                </template>
+                                <p>{stat.label}</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        </div>
+    </template>
+    
+    <template if:true={showContact}>
+        <c-contact-us></c-contact-us>
+    </template>
+
+    <!-- Modal for Booking Car -->
+    <template if:true={showBookingModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container" style="max-width: 90%; width: 1150px; margin: 2rem auto;">
+                <div class="slds-modal__content" style="border-radius: 16px; overflow-y: auto; max-height: 80vh; position: relative;">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeBookingModal} style="position: absolute; right: 20px; top: 20px; z-index: 9999; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; outline: none;">
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small" style="--slds-c-icon-color-foreground: #111827;"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <c-booking_page
+                        selected-car-name={selectedBookingCarName}
+                        selected-car-price={selectedBookingCarPrice}
+                        selected-car-image={selectedBookingCarImage}
+                        selected-car-type={selectedBookingCarType}
+                    ></c-booking_page>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

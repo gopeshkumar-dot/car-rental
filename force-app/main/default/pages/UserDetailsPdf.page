@@ -1,0 +1,76 @@
+<apex:page controller="UserDetailsPdfController" renderAs="pdf">
+    <!-- Banner Section -->
+    <apex:sectionHeader />
+    <div style="text-align: center; margin-bottom: 20px;">
+        <apex:image url="{!URLFOR($Resource.carpic)}" width="100%" height="350" alt="Company Banner" />
+    </div>
+
+    <!-- About User Details Section -->
+    <div style="background-color: #F0FFF0; padding: 10px; border-radius: 5px;">
+        <apex:pageBlock title="Your Details">
+            <apex:pageBlockSection columns="2">
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">customerName:</span> <apex:outputText value="{!customerName}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">carName:</span> <apex:outputText value="{!carName}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">startTime:</span> <apex:outputText value="{!startTime}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">endTime:</span> <apex:outputText value="{!endTime}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Email_Id:</span> <apex:outputText value="{!Email_Id}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Phone_no:</span> <apex:outputText value="{!Phone_no}" />
+                </div>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </div>
+
+    <!-- About Us Section -->
+    <div style="background-color: #FFFFF0; padding: 10px; border-radius: 5px; margin-top: 15px;">
+        <apex:pageBlock title="About Us">
+            <apex:pageBlockSection columns="4">
+                <p>This company is a legal entity formed by a group of individuals to engage in and operate a <br/>
+                    business enterprise in a commercial or industrial capacity. It is an artificial person,<br/>
+                    also known as corporate personhood, with many of the same legal rights and responsibilities as a person.
+                </p><br/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="4">
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Name:</span> <apex:outputText value="{!companyName}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Phone:</span> <apex:outputText value="{!comPhone}" />
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Email:</span> <apex:outputText value="{!comEmail}" />
+                </div>
+
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">City:</span> <apex:outputText value="{!comCity}" />
+                </div>
+
+                 <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Street:</span> <apex:outputText value="{!comStreet}" />
+                </div>
+
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">State:</span> <apex:outputText value="{!comState}" />
+                </div>
+                <div>
+                    <span style="font-weight: bold;">Country:</span> <apex:outputText value="{!comCountry}" />
+                </div>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </div>
+
+    <!-- Footer Section -->
+    <div style="text-align: center; margin-top: 15px; padding: 10px; background-color: #F5FFFA;">
+        <p>© 2024 Dano Cloud Technology. All rights reserved.</p>
+    </div>
+</apex:page>

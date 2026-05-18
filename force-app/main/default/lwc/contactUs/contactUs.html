@@ -1,0 +1,350 @@
+<template>
+    <div class="page-wrapper">
+
+        <!-- HERO -->
+        <section class="hero-section">
+
+            <div class="overlay"></div>
+
+            <div class="hero-content">
+
+                <!-- LEFT -->
+                <div class="left-content">
+
+                    <p class="small-heading">LET'S CONNECT</p>
+
+                    <h1>
+                        Get In <span>Touch</span>
+                    </h1>
+
+                    <p class="description">
+                        We are available 24/7 for you.
+                        <br/><br/>
+                        Have questions, need help, or want to book a
+                        luxury ride? Our team is ready to assist you.
+                    </p>
+
+                    <div class="contact-card">
+                        <div class="icon-box">📍</div>
+
+                        <div>
+                            <h3>Address</h3>
+
+                            <p>
+                                Lodipur  Khurd, Lodipur ,
+                                <br/>
+                                Bhagalpur 812001
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="icon-box">📞</div>
+
+                        <div>
+                            <h3>Phone</h3>
+                            <p>8789931797</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="icon-box">✉️</div>
+
+                        <div>
+                            <h3>Email</h3>
+                            <p>contact@danocloudtecthnology.com</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="icon-box">⏰</div>
+
+                        <div>
+                            <h3>Working Hours</h3>
+                            <p>Mon - Sun : 09:00 AM - 09:00 PM</p>
+                        </div>
+                    </div>
+
+                    <div class="social-section">
+
+    <span class="follow-text">Follow Us</span>
+
+    <div class="social-icons">
+
+        <!-- FACEBOOK -->
+        <a
+            href="https://www.facebook.com/people/Danocloudtechnology/100082947501868/"
+            target="_blank"
+            class="social-icon facebook"
+        >
+            <img src={facebookIcon} alt="Facebook"/>
+        </a>
+
+        <!-- INSTAGRAM -->
+        <a
+            href="https://www.instagram.com/danocloud"
+            target="_blank"
+            class="social-icon instagram"
+        >
+            <img src={instagramIcon} alt="Instagram"/>
+        </a>
+
+        <!-- LINKEDIN -->
+        <a
+            href="https://www.linkedin.com/authwall?trk=bf&trkInfo=AQGHkWUO9HbH3wAAAZ0JsQt440HNFw2hoXZ_vCZGg8N5YbljLzekXiucxC7BDkNmM1DAAo9Ya6W0q47yTUg0t0W7aq0FM62qnWkwdVRfIMIvSojSkWn_AAwKbeXnwzJO8ffUDcY=&original_referer=&sessionRedirect=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fdano-cloud-83899b242"
+            target="_blank"
+            class="social-icon linkedin"
+        >
+            <img src={linkedinIcon} alt="LinkedIn"/>
+        </a>
+
+    </div>
+
+</div>
+
+                </div>
+                
+
+   <!-- RIGHT SIDE -->
+<div class="right-content">
+
+    <!-- SUCCESS SCREEN -->
+    <template if:true={isSuccess}>
+
+        <div class="success-wrapper">
+
+            <div class="success-card">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <h1>
+                    Inquiry Submitted Successfully
+                </h1>
+
+                <p>
+                    Thank you for contacting us.
+                    Our team will reach out shortly.
+                </p>
+
+                <button
+                    class="back-btn"
+                    onclick={handleBack}
+                >
+                    Submit Another Request
+                </button>
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <!-- CONTACT FORM -->
+    <template if:false={isSuccess}>
+
+        <div class="form-wrapper">
+
+            <div class="form-grid">
+
+                <lightning-input
+                type="text"
+                label="Full Name"
+                value={formData.fullName}
+                data-field="fullName"
+                onchange={handleChange}
+                required
+                message-when-value-missing="Full Name is required">
+            </lightning-input>
+
+                <lightning-input
+                type="email"
+                label="Email"
+                value={formData.email}
+                data-field="email"
+                onchange={handleChange}
+                required
+                message-when-value-missing="Email is required">
+            </lightning-input>
+
+                <lightning-input
+    type="tel"
+    label="Phone"
+    value={formData.phone}
+    data-field="phone"
+    onchange={handleChange}
+    required
+    message-when-value-missing="Phone Number is required">
+</lightning-input>
+
+                <lightning-combobox
+                    label="Inquiry Type"
+                    options={inquiryOptions}
+                    value={formData.inquiryType}
+                    data-field="inquiryType"
+                    onchange={handleChange}>
+                </lightning-combobox>
+
+                <lightning-combobox
+                    label="Preferred Contact Method"
+                    options={contactOptions}
+                    value={formData.preferredContact}
+                    data-field="preferredContact"
+                    onchange={handleChange}>
+                </lightning-combobox>
+
+                <lightning-input
+                label="Subject"
+                value={formData.subject}
+                data-field="subject"
+                onchange={handleChange}
+                required
+                message-when-value-missing="Subject is required">
+            </lightning-input>
+
+                <lightning-textarea
+                label="Message"
+                value={formData.message}
+                data-field="message"
+                onchange={handleChange}
+                maxlength="500"
+                required
+                message-when-value-missing="Message is required">
+            </lightning-textarea>
+
+                <button
+                    class="send-btn"
+                    onclick={handleSubmit}
+                    disabled={isLoading}
+                >
+                    Submit Inquiry
+                </button>
+
+                <p class="privacy-text">
+                    🔒 Your information is safe with us.
+                </p>
+
+            </div>
+
+            <!-- SPINNER -->
+            <template if:true={isLoading}>
+                <lightning-spinner
+                    alternative-text="Saving">
+                </lightning-spinner>
+            </template>
+
+        </div>
+
+    </template>
+
+</div> <!-- right-content -->
+
+</div> <!-- hero-content -->
+
+</section> <!-- hero-section -->
+    <section class="feature-section">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🚘
+            </div>
+
+            <h3>Wide Range of Cars</h3>
+
+            <p>
+                Choose from economy to luxury
+                cars for your journey.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🏷
+            </div>
+
+            <h3>Best Price Guarantee</h3>
+
+            <p>
+                Get the most competitive prices
+                with no hidden charges.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🛡
+            </div>
+
+            <h3>Safe & Secure</h3>
+
+            <p>
+                Your safety is our priority with
+                verified drivers.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🎧
+            </div>
+
+            <h3>24/7 Support</h3>
+
+            <p>
+                We're here to help anytime,
+                anywhere.
+            </p>
+
+        </div>
+
+    </section>
+
+    <section class="location-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="location-info">
+
+        <h2>Our Location</h2>
+
+        <div class="heading-line"></div>
+
+        <p>
+            Find us easily and start your
+            journey with RideMitro.
+        </p>
+
+        <a
+            href="https://maps.google.com"
+            target="_blank"
+            class="direction-btn"
+        >
+            Get Directions
+            <span>➜</span>
+        </a>
+
+    </div>
+
+    <!-- RIGHT SIDE MAP -->
+    <div class="map-section">
+
+        <lightning-map
+            map-markers={mapMarkers}
+            zoom-level="15"
+            markers-title="RideMitro Location"
+            list-view="hidden">
+        </lightning-map>
+
+    </div>
+
+</section>
+
+    </div>
+</template>

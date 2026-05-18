@@ -1,0 +1,62 @@
+<template>
+    <div class="tracker-container slds-p-around_medium">
+        <div class="header slds-m-bottom_medium">
+            <h1 class="slds-text-heading_large">Live Vehicle Tracking</h1>
+            <p class="slds-text-title_caps">Real-time location of your rented car</p>
+        </div>
+
+        <div class="slds-grid slds-wrap">
+            <!-- Map View -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-3">
+                <div class="map-wrapper">
+                    <template if:true={mapMarkers}>
+                        <lightning-map
+                            map-markers={mapMarkers}
+                            zoom-level={zoomLevel}
+                            markers-title="Vehicle Location"
+                            onmarkerselect={handleMarkerSelect}>
+                        </lightning-map>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Stats Panel -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3 slds-p-left_medium">
+                <div class="stats-panel slds-card slds-p-around_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Vehicle Status</h2>
+                    <div class="stat-item">
+                        <span class="label">Status:</span>
+                        <span class="value status-active">On Trip</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Current Speed:</span>
+                        <span class="value">{currentSpeed} km/h</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Engine Temp:</span>
+                        <span class="value">{engineTemp}°C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Battery:</span>
+                        <span class="value">{batteryLevel}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Fuel Level:</span>
+                        <div class="fuel-bar-container">
+                            <div class="fuel-bar" style={fuelStyle}></div>
+                        </div>
+                        <span class="value">{fuelLevel}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Last Update:</span>
+                        <span class="value">{lastUpdate}</span>
+                    </div>
+                    
+                    <button class="slds-button slds-button_brand slds-m-top_medium w-100" onclick={handleRefresh}>
+                        Refresh Location
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

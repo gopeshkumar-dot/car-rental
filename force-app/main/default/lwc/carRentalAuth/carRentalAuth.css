@@ -1,0 +1,84 @@
+.auth-shell {
+    min-height: 100vh;
+    background: #f6f8fb;
+}
+
+.auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.nav-links a {
+    margin-left: 16px;
+    color: #0f4c81;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.left-panel {
+    border-radius: 16px;
+    min-height: 520px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.left-panel h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+.left-panel p {
+    font-size: 1rem;
+    opacity: 0.95;
+    max-width: 360px;
+}
+
+.right-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+    min-height: 520px;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.trip-note {
+    margin-top: 10px;
+    color: #475467;
+    font-size: 0.9rem;
+}
+
+.toggle-link {
+    color: #475467;
+}
+
+.toggle-link a {
+    margin-left: 4px;
+    color: #0f4c81;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.spinner-wrap {
+    margin-top: 16px;
+}

@@ -1,0 +1,49 @@
+/* customToast.css */
+.slds-notify_toast {
+    position: fixed;
+    top: -6rem;
+    right: 10rem; /* Adjusted for smaller screens */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: var(--lwc-box-shadow-medium, 0 2px 6px 0 rgba(0, 0, 0, 0.2));
+    border-radius: var(--lwc-border-radius-medium, 0.25rem);
+    transition: top 0.3s ease-in-out;
+}
+
+/* Content of the toast */
+.slds-notify__content {
+    flex: 1;
+    padding-left: 1rem;
+}
+
+/* Close button of the toast */
+.slds-notify__close {
+    padding-left: 1rem;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+    .slds-notify_toast {
+        top: -6rem; /* Adjusted top position for tablets */
+        right: 1rem; /* Adjusted right position for tablets */
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .slds-notify_toast {
+        top: -6rem; /* Adjusted top position for mobile devices */
+        right: 0.5rem; /* Adjusted right position for mobile devices */
+        padding: 0.75rem; /* Reduced padding for smaller screens */
+        font-size: 0.875rem; /* Reduced font size for smaller screens */
+    }
+
+    .slds-notify__content {
+        padding-left: 0.5rem; /* Reduced padding for mobile devices */
+    }
+
+    .slds-notify__close {
+        padding-left: 0.5rem; /* Reduced padding for mobile devices */
+    }
+}

@@ -1,0 +1,403 @@
+<template>
+    <div class="page-header">
+        <h1 class="page-title">RideMetro</h1>
+    </div>
+    <div class="slds-grid slds-wrap slds-col container">
+        
+        <!-- HERO SECTION -->
+        <div class="hero-section">
+            <div class="hero-overlay"></div>
+            
+            <div class="hero-content">
+                <h1 class="hero-title">Join Our Team</h1>
+                <p class="hero-subtitle">Build your career with India's fastest growing car rental platform</p>
+                
+                <div class="stats-grid">
+                    <template for:each={statsData} for:item="stat">
+                        <div key={stat.id} class="stat-card">
+                            <span class="stat-number">{stat.value}</span>
+                            <span class="stat-label">{stat.label}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- WHY JOIN US SECTION -->
+        <div class="why-join-section">
+            <h2 class="section-title">WHY JOIN US</h2>
+            <div class="features-grid">
+                <template for:each={featuresData} for:item="feature">
+                    <div key={feature.id} class="feature-card">
+                        
+                        <!-- REPLACED SVG WITH LIGHTNING ICON -->
+                        <div class="feature-icon">
+                            <lightning-icon 
+                                icon-name={feature.iconName} 
+                                size="large" 
+                                alternative-text={feature.title}>
+                            </lightning-icon>
+                        </div>
+
+                        <p class="feature-title">'{feature.title}'</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="main-container">
+        
+        <!-- SECTION 1: EMPLOYEE BENEFITS -->
+        <section class="benefits-section">
+            <h2 class="section-header">EMPLOYEE BENEFITS</h2>
+            <div class="benefits-grid">
+                <template for:each={benefitsList} for:item="benefit">
+                    <div key={benefit.id} class="benefit-item">
+                        <!-- Icon (using SLDS SVG for sharpness) -->
+                        <div class="icon-container">
+                            <svg class="slds-icon" aria-hidden="true" viewBox="0 0 52 52" fill={benefit.color}>
+                                {benefit.iconPath}
+                            </svg>
+                        </div>
+                        <span class="benefit-label">{benefit.title}</span>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- SECTION 2: JOB SEARCH (Functional) -->
+        <section class="search-section">
+            <h2 class="section-header">JOB SEARCH</h2>
+            
+            <div class="search-bar">
+                <!-- Keyword Search -->
+                <div class="search-input-wrapper">
+                    <input type="text" 
+                           placeholder="Search jobs..." 
+                           class="search-input"
+                           onkeyup={handleSearch}
+                           value={searchTerm} />
+                </div>
+
+                <!-- Department Filter -->
+                <select class="search-select" onchange={handleFilterChange} name="department">
+                    <option value="">Department</option>
+                    <template for:each={departments} for:item="dept">
+                        <option key={dept} value={dept}>{dept}</option>
+                    </template>
+                </select>
+
+                <!-- Location Filter -->
+                <select class="search-select" onchange={handleFilterChange} name="location">
+                    <option value="">Location</option>
+                    <template for:each={locations} for:item="loc">
+                        <option key={loc} value={loc}>{loc}</option>
+                    </template>
+                </select>
+
+                <!-- Action Button -->
+                <button class="search-btn" onclick={handleFilterChange}>Filter Jobs</button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: JOB LISTINGS (Dynamic) -->
+        <section class="listings-section">
+            <h2 class="section-header">JOB LISTINGS</h2>
+            
+            <div class="jobs-grid">
+                <!-- Loop through FILTERED data -->
+                <template for:each={filteredJobs} for:item="job">
+                    <div key={job.id} class="job-card">
+                        
+                        <div class="job-header">
+                            <span class="job-badge">NEW</span>
+                            <h3 class="job-title">{job.title}</h3>
+                        </div>
+
+                        <div class="job-details">
+                            <p class="job-meta"><strong>Department:</strong> {job.department}</p>
+                            <p class="job-meta"><strong>Location:</strong> {job.location}</p>
+                            <p class="job-type">{job.type}</p>
+                        </div>
+
+                       <div class="job-actions">
+                            <!-- APPLY BUTTON - Opens Modal -->
+                            <button class="btn-apply" onclick={openApplyModal} data-job-id={job.id}>
+                                Apply Now
+                            </button>
+                            <button class="btn-details">View Details</button>
+                        </div>
+                        
+                    </div>
+                </template>
+                
+                <!-- No Results Message -->
+                <div if:true={showNoResults} class="no-results">
+                    <p>No jobs found matching your criteria.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+
+
+
+  
+    <div class="main-container">
+        
+        <!-- SECTION 1: EMPLOYEE CULTURE -->
+        <section class="culture-section">
+            <h2 class="section-title">EMPLOYEE CULTURE</h2>
+            
+            <!-- Image Gallery Strip -->
+            <div class="gallery-strip">
+                <template for:each={galleryImages} for:item="img">
+                    <div key={img.id} class="gallery-item" style="background-image: url({img.url})"></div>
+                </template>
+            </div>
+
+            <!-- Testimonials Grid -->
+            <div class="testimonials-grid">
+                <template for:each={testimonials} for:item="t">
+                    <div key={t.id} class="testimonial-card">
+                        <div class="card-content">
+                            <div class="user-info">
+                                <div class="avatar" style="background-image: url({t.avatarUrl})"></div>
+                                <div class="details">
+                                    <h3 class="user-name">{t.name}</h3>
+                                    <p class="user-role">{t.role}</p>
+                                    <div class="stars">
+                                        <template for:each={t.ratingStars} for:item="star">
+                                            <span key={star} class="star-icon">★</span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="quote">"{t.quote}"</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERVIEW PROCESS -->
+        <section class="process-section">
+            <h2 class="section-title">INTERVIEW PROCESS</h2>
+            
+            <div class="timeline-container">
+                <template for:each={interviewSteps} for:item="step" for:index="index">
+                    <div key={step.id} class="timeline-step">
+                        
+                        <!-- Step Header (Icon + Title) -->
+                        <div class="step-header">
+                            <!-- <div class="step-number">{index + 1}</div> -->
+                            <span class="step-title">{step.title}</span>
+                        </div>
+
+                        <!-- Connecting Line (Hidden for last item) -->
+                        <div if:false={step.isLast} class="connecting-line"></div>
+
+                        <!-- Card Content -->
+                        <div class="step-card">
+                            <p class="step-question">{step.question}</p>
+                            <p class="step-desc">{step.description}</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- SECTION 3: JOB ALERTS CTA -->
+        <section class="alerts-section">
+            <h2 class="section-title">JOB ALERTS CTA</h2>
+            <div class="cta-box">
+                <div class="input-wrapper">
+                    <input type="email" 
+                           class="email-input" 
+                           placeholder="Your email address"
+                           value={emailValue}
+                           onchange={handleEmailChange} />
+                </div>
+                <button class="subscribe-btn" onclick={handleSubscribe}>
+                    Subscribe
+                </button>
+            </div>
+            <!-- Success Message -->
+            <div if:true={showSuccess} class="success-message">
+                🎉 You have successfully subscribed to our job alerts!
+            </div>
+        </section>
+    </div>
+
+
+
+
+
+       <!-- ================= APPLY MODAL ================= -->
+        <div if:true={isModalOpen} class="modal-overlay" onclick={closeModalOnOverlay}>
+            <div class="modal-container" onclick={preventClose}>
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h2 class="modal-title">Apply for Position</h2>
+                    <button class="modal-close-btn" onclick={closeModal}>&times;</button>
+                </div>
+
+                <!-- Selected Job Info -->
+                <div class="selected-job-info">
+                    <span class="selected-job-badge">Selected Job</span>
+                    <!-- <h3 class="selected-job-title">{selectedJob?.title}</h3> -->
+                    <div class="selected-job-meta">
+                        <!-- <span>{selectedJob?.department} • {selectedJob?.location} • {selectedJob?.type}</span> -->
+                    </div>
+                </div>
+
+                <!-- Application Form -->
+                <div class="modal-body">
+                    <form class="application-form" onsubmit={handleSubmitApplication}>
+                        
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" 
+                                   class="form-input" 
+                                   placeholder="Enter your full name"
+                                   required
+                                   value={formData.fullName}
+                                   onchange={handleFormChange}
+                                   name="fullName" />
+                        </div>
+
+                        <!-- Email & Phone Row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" 
+                                       class="form-input" 
+                                       placeholder="your.email@example.com"
+                                       required
+                                       value={formData.email}
+                                       onchange={handleFormChange}
+                                       name="email" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" 
+                                       class="form-input" 
+                                       placeholder="+91 98765 43210"
+                                       required
+                                       value={formData.phone}
+                                       onchange={handleFormChange}
+                                       name="phone" />
+                            </div>
+                        </div>
+
+                        <!-- Current Company & Experience -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Current Company</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       placeholder="Current employer (if any)"
+                                       value={formData.currentCompany}
+                                       onchange={handleFormChange}
+                                       name="currentCompany" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Years of Experience *</label>
+                                <select class="form-input" 
+                                        required
+                                        value={formData.experience}
+                                        onchange={handleFormChange}
+                                        name="experience">
+                                    <option value="">Select experience</option>
+                                    <option value="0-1">0-1 Years</option>
+                                    <option value="1-3">1-3 Years</option>
+                                    <option value="3-5">3-5 Years</option>
+                                    <option value="5-8">5-8 Years</option>
+                                    <option value="8+">8+ Years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Resume Upload -->
+                        <div class="form-group">
+                            <label class="form-label">Upload Resume / CV *</label>
+                            <div class="file-upload-area">
+                                <input type="file" 
+                                       class="file-input" 
+                                       accept=".pdf,.doc,.docx"
+                                       onchange={handleFileUpload}
+                                       id="resumeUpload" />
+                                <label for="resumeUpload" class="file-upload-label">
+                                    <div class="file-upload-icon">📄</div>
+                                    <span if:true={fileName}>{fileName}</span>
+                                    <span if:false={fileName}>Click to upload (PDF, DOC, DOCX)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- LinkedIn / Portfolio -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">LinkedIn Profile</label>
+                                <input type="url" 
+                                       class="form-input" 
+                                       placeholder="https://linkedin.com/in/yourprofile"
+                                       value={formData.linkedin}
+                                       onchange={handleFormChange}
+                                       name="linkedin" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Portfolio / GitHub</label>
+                                <input type="url" 
+                                       class="form-input" 
+                                       placeholder="https://github.com/username"
+                                       value={formData.portfolio}
+                                       onchange={handleFormChange}
+                                       name="portfolio" />
+                            </div>
+                        </div>
+
+                        <!-- Cover Letter -->
+                        <div class="form-group">
+                            <label class="form-label">Cover Letter</label>
+                            <textarea class="form-textarea" 
+                                      placeholder="Tell us why you're interested in this role..."
+                                      value={formData.coverLetter}
+                                      onchange={handleFormChange}
+                                      name="coverLetter"
+                                      rows="4"></textarea>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" onclick={closeModal}>Cancel</button>
+                            <button type="submit" class="btn-submit">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SUCCESS MODAL ================= -->
+        <div if:true={showSuccessModal} class="modal-overlay" onclick={closeSuccessModal}>
+            <div class="success-modal-container" onclick={preventClose}>
+                <div class="success-icon">✅</div>
+                <h3 class="success-title">Application Submitted!</h3>
+                <p class="success-message">Thank you for applying. Our team will review your application and get back to you within 3-5 business days.</p>
+                <button class="btn-success-close" onclick={closeSuccessModal}>Close</button>
+            </div>
+        </div>
+
+    
+
+
+
+</template>

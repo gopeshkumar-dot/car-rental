@@ -1,0 +1,94 @@
+<template>
+    <template if:true={showAboutPage}>
+        <c-car-renter-about></c-car-renter-about>
+    </template>
+    <template if:false={showAboutPage}>
+        <div class="welcome-container">
+            <h1 class="welcome-title">WELCOME TO AUTOBAHN CAR RENTAL LLC</h1>
+            <hr class="welcome-divider" />
+            <h2 class="welcome-subtitle">LOOKING TO HIRE AFFORDABLE CAR RENTAL AND LEASING SERVICES IN UAE?</h2>
+            <p class="welcome-text">
+                At Autobahn, we promulgate our aspiration of being the first choice in vehicle rentals by providing unrivalled excellence in leasing and hiring quality cars through trained and courteous staff. Established in the year 1991, with exemplary expertise in client servicing, Autobahn has a wide range of Passenger Cars, SUV, and Commercial Vehicles offering a single window for all the Customer Transportation needs.
+            </p>
+            <button class="read-more-button" onclick={handleReadMore}>Read More</button>
+        </div>
+    </template>
+
+    <!-- Commercial Fleet Section -->
+    <div class="fleet-container">
+        <h2 class="fleet-title">OUR COMMERCIAL FLEET</h2>
+        <div class="fleet-grid">
+            <div class="fleet-card">
+                <img src={firstp1} alt="Cargo / Delivery Vans" class="fleet-image"/>
+                <h3 class="fleet-card-title">Cargo / Delivery Vans</h3>
+                <p class="fleet-card-description">
+                    Our rental fleet offers a wide range of cargo/delivery vehicles, large and small, to cater for all operations from supermarkets...
+                </p>
+                <button class="read-more-button" onclick={handleContactUs}>Read More</button>
+            </div>
+
+            <div class="fleet-card">
+                <img src={firstp1} alt="Chiller & Freezer Vans" class="fleet-image"/>
+                <h3 class="fleet-card-title">Chiller & Freezer Vans</h3>
+                <p class="fleet-card-description">
+                    If you need a chiller or freezer van to transport your goods, then we are here to help. We have a wide range of refrigerated vans...
+                </p>
+                <button class="read-more-button" onclick={handleContactUs}>Read More</button>
+            </div>
+
+            <div class="fleet-card">
+                <img src={firstp1} alt="4x2 & 4x4 Pickups" class="fleet-image"/>
+                <h3 class="fleet-card-title">4x2 & 4x4 Pickups (Automatic & Manual)</h3>
+                <p class="fleet-card-description">
+                    Offering a wide range of pickup rentals for all kinds of commercial requirements and we provide excellent quality and cost-effective service...
+                </p>
+                <button class="read-more-button" onclick={handleContactUs}>Read More</button>
+            </div>
+<!-- 
+            <div class="fleet-card">
+                <img src={firstp1} alt="Chiller & Freezer LCV Trucks" class="fleet-image"/>
+                <h3 class="fleet-card-title">Chiller & Freezer LCV Trucks</h3>
+                <p class="fleet-card-description">
+                    We are a recognized service provider offering temperature controlled Chiller and Freezer Trucks with Partition and Tail lift...
+                </p>
+                <button class="read-more-button" onclick={handleContactUs}>Read More</button>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- Passenger Vehicle Fleet Section -->
+    <div class="fleet-container2">
+        <h2 class="fleet-title2">OUR PASSENGER VEHICLE FLEET</h2>
+        <div class="fleet-grid2">
+            <div class="fleet-card2">
+                <img src={firstp2} alt="Kia Pegas" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Kia Pegas car rental dubai</h3>
+            </div>
+
+            <div class="fleet-card2">
+                <img src={firstp3} alt="Toyota Corolla Hybrid" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Toyota Corolla Hybrid dubai car rental</h3>
+            </div>
+
+            <div class="fleet-card2">
+                <img src={firstp4} alt="Mazda 6" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Mazda 6</h3>
+            </div>
+
+            <div class="fleet-card2">
+                <img src={firstp5} alt="Toyota Raize" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Toyota Raize</h3>
+            </div>
+
+            <div class="fleet-card2">
+                <img src={firstp6} alt="Toyota Rush" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Toyota Rush</h3>
+            </div>
+
+            <div class="fleet-card2">
+                <img src={firstp1} alt="Mitsubishi Pajero" class="fleet-image2"/>
+                <h3 class="fleet-card-title2">Mitsubishi Pajero</h3>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,309 @@
+<template>
+
+    <template if:true={aboutpage}>
+
+        <div class="about-wrapper">
+
+            <!-- HERO SECTION -->
+
+            <section class="hero-section">
+
+                <div class="hero-overlay"></div>
+
+                <img
+                    src={pageData.Hero_Background_Image__c}
+                    class="hero-bg"
+                />
+
+                <div class="hero-content">
+
+                    <div class="hero-left">
+
+                        <p class="hero-badge">
+                            {pageData.Hero_Badge__c}
+                        </p>
+
+                        <h1 class="hero-title">
+
+                            {pageData.Hero_Title_Line_1__c}
+
+                            <span>
+                                {pageData.Hero_Title_Highlight__c}
+                            </span>
+
+                            {pageData.Hero_Title_Line_2__c}
+
+                        </h1>
+
+                        <p class="hero-desc">
+
+                            {pageData.Hero_Description__c}
+
+                        </p>
+
+                    </div>
+
+                    <div class="hero-right">
+
+                        <img
+                            src={pageData.Hero_Car_Image__c}
+                            class="hero-car"
+                        />
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- COMPANY SECTION -->
+
+            <section class="company-section">
+
+                <div class="company-left">
+
+                    <p class="section-label">
+                        {pageData.Company_Label__c}
+                    </p>
+
+                    <h2 class="section-title">
+                        {pageData.Company_Title__c}
+                    </h2>
+
+                    <div class="red-line"></div>
+
+                    <p class="company-text">
+                       {pageData.Company_Desc_1__c}
+                    </p>
+
+                    <p class="company-text">
+                        {pageData.Company_Desc_2__c}
+                    </p>
+
+                    <button
+                        class="contact-btn"
+                        onclick={handleContactUs}>
+
+                        {pageData.CTA_Button_Text__c}
+
+                    </button>
+
+                </div>
+
+                <div class="company-right">
+
+                    <img
+                        src={pageData.Team_Image_URL__c}
+                        class="team-image"
+                    />
+
+                    <div class="experience-box">
+
+                        <h2>
+                            {pageData.Experience_Years__c}+
+                        </h2>
+
+                        <p>
+                            {pageData.Experience_Label__c}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ASPIRATION -->
+
+            <div class="aspiration-section">
+
+    <p class="aspiration-label">
+        {pageData.Aspiration_Label__c}
+    </p>
+
+    <h2 class="aspiration-title">
+        {pageData.Aspiration_Title__c}
+    </h2>
+
+    <div class="aspiration-line"></div>
+
+    <p class="aspiration-desc">
+        {pageData.Aspiration_Description__c}
+    </p>
+
+    <div class="aspiration-grid">
+
+        <template
+            for:each={features}
+            for:item="feature">
+
+            <div
+    key={feature.Id}
+    class="aspiration-card"
+    data-id={feature.Id}
+    onclick={openModal}>
+
+    <div class="icon-circle">
+
+        <lightning-icon
+            icon-name={feature.Icon_Name__c}
+            size="small">
+        </lightning-icon>
+
+    </div>
+
+    <h3 class="card-title">
+        {feature.Title__c}
+    </h3>
+
+    <div class="card-desc">
+
+    </div>
+
+    <button
+        class="more-btn"
+        data-id={feature.Id}
+        onclick={openModal}>
+
+        More →
+    </button>
+
+</div>
+
+        </template>
+
+    </div>
+
+</div>
+<template if:true={showModal}>
+
+    <div class="feature-overlay">
+
+        <div class="feature-panel">
+
+            <!-- LEFT -->
+
+            <div class="panel-left">
+
+                <div class="panel-icon">
+
+                    <lightning-icon
+                        icon-name={selectedFeature.Icon_Name__c}
+                        size="large">
+                    </lightning-icon>
+
+                </div>
+
+                <p class="panel-label">
+                    ASPIRATION FEATURE
+                </p>
+
+                <h2 class="panel-title">
+                    {selectedFeature.Title__c}
+                </h2>
+
+                <div class="panel-line"></div>
+
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="panel-right">
+
+                <button
+                    class="panel-close"
+                    onclick={closeModal}>
+
+                    ✕
+
+                </button>
+
+                <div class="panel-content">
+
+                    <lightning-formatted-rich-text
+                        value={selectedFeature.Full_Content__c}>
+                    </lightning-formatted-rich-text>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</template>
+
+            <!-- SERVICES -->
+
+            <div class="services-section">
+
+    <!-- TOP -->
+
+    <div class="services-heading">
+
+        <p class="services-label">
+            {pageData.Service_Label__c}
+        </p>
+
+        <h2 class="services-title">
+            {pageData.Service_Title__c}
+        </h2>
+
+        <div class="services-line"></div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="services-wrapper">
+
+        <!-- SERVICES GRID -->
+
+        <div class="services-grid">
+
+            <template
+                for:each={services}
+                for:item="service">
+
+                <div
+                    key={service.Id}
+                    class="service-card">
+
+                    <div class="service-icon">
+
+                        <lightning-icon
+                            icon-name={service.Icon_Name__c}
+                            size="small">
+                        </lightning-icon>
+
+                    </div>
+
+                    <div class="service-info">
+
+                        <h3>
+                            {service.Service_Name__c}
+                        </h3>
+
+                        <p>
+                            {service.Service_Description__c}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </template>
+
+        </div>
+
+    </div>
+
+</div>
+
+        </div>
+
+    </template>
+
+</template>

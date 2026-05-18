@@ -1,0 +1,859 @@
+/* ==================== HEADER STYLES ==================== */
+.header-container {
+    background-color: #ffffff;
+    border-top: 4px solid #4a148c;
+    border-bottom: 4px solid #000000;
+    padding: 12px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Logo Section */
+/* Logo Section - Move Right */
+.logo-section {
+    flex-shrink: 0;
+    margin-left: 80px; /* Add this to push logo right */
+}
+
+.logo {
+    height: 88px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* Action Section - Move Left */
+.action-section {
+    flex-shrink: 0;
+    margin-right: 20px; /* Add this to push login button left */
+}
+
+.login-btn {
+    background-color: #673ab7; /* Purple color matching the design */
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(103, 58, 183, 0.3);
+    margin-right: 50px;
+}
+
+.login-btn:hover {
+    background-color: #512da8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(103, 58, 183, 0.4);
+}
+
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+/* Header Wrapper - Adjust spacing */
+.header-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px; /* Reduced gap for tighter layout */
+}
+
+/* Contact Section - Desktop */
+.contact-section {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex: 1;
+    justify-content: center;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.contact-item:hover {
+    background-color: #f5f5f5;
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #666;
+}
+
+.icon-wrapper.whatsapp-icon {
+    border-color: #25D366;
+    color: #25D366;
+}
+
+.icon-wrapper svg {
+    width: 20px;
+    height: 20px;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.contact-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.contact-value {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* Action Section - Login Button */
+.action-section {
+    flex-shrink: 0;
+}
+
+/* Mobile Contact Section */
+.mobile-contact-section {
+    display: none;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+    padding: 0 20px;
+}
+
+.mobile-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.mobile-contact-item:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.mobile-contact-item svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+}
+
+/* ==================== MODAL STYLES ==================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0;
+}
+
+.close-button {
+    background: #0a0a0a;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.close-button:hover {
+    background: #333;
+    transform: rotate(90deg);
+}
+
+.close-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    font-size: 15px;
+    color: #333;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    background-color: #e8e8e8;
+    box-shadow: 0 0 0 2px rgba(255, 41, 56, 0.2);
+}
+
+.form-input::placeholder {
+    color: #999;
+}
+
+.error-message {
+    color: #ff2938;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.login-button {
+    width: 100%;
+    padding: 16px;
+    background-color: #ff2938;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.login-button:hover:not(:disabled) {
+    background-color: #e62532;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 41, 56, 0.3);
+}
+
+.login-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.login-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loading-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+.spinner .opacity-25 {
+    opacity: 0.25;
+}
+
+.spinner .opacity-75 {
+    opacity: 0.75;
+}
+
+.modal-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.signup-text {
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.signup-link {
+    color: #ff2938;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+    color: #e62532;
+}
+
+.forgot-link {
+    color: #ff2938;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+    color: #e62532;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 1200px) {
+    .contact-label {
+        font-size: 11px;
+    }
+    
+    .contact-value {
+        font-size: 12px;
+    }
+    
+    .contact-item {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 992px) {
+    .desktop-only {
+        display: none !important;
+    }
+    
+    .mobile-only {
+        display: flex !important;
+    }
+    
+    .header-wrapper {
+        flex-wrap: wrap;
+    }
+    
+    .logo-section {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .action-section {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .login-btn {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-wrapper {
+        padding: 0 10px;
+    }
+    
+    .login-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+    
+    .mobile-contact-item {
+        min-width: 80px;
+        font-size: 11px;
+    }
+    
+    .form-input {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+    
+    .login-button {
+        padding: 14px;
+    }
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.desktop-only {
+    display: flex;
+}
+
+.mobile-only {
+    display: none;
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+.login-btn:focus,
+.contact-item:focus,
+.mobile-contact-item:focus,
+.close-button:focus,
+.signup-link:focus,
+.forgot-link:focus,
+.login-button:focus,
+.form-input:focus {
+    outline: 3px solid #4a148c;
+    outline-offset: 2px;
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    .header-container {
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+    }
+    
+    .login-btn,
+    .modal-overlay {
+        display: none;
+    }
+}
+
+/* Container for social buttons to keep them stacked */
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 16px;  /* ✅ This adds space above the social buttons */
+}
+.btn-signup {
+    width: 100%;
+    padding: 12px;
+    background: #ff2e3c;  /* Your red color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;  /* ✅ This adds space below Sign Up button */
+}
+
+/* Common Button Styles */
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers icon + text */
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #dcdfe6; /* Light grey border like image */
+    border-radius: 6px;        /* Smooth rounded corners */
+    background-color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 10px; /* Space between logo and text */
+}
+
+/* Hover Effect: Slight background change & shadow */
+.social-btn:hover {
+    background-color: #f5f7fa;
+    border-color: #c0c4cc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Active (Click) Effect */
+.social-btn:active {
+    background-color: #e6e8eb;
+    transform: scale(0.98);
+}
+
+/* Ensure SVGs stay the right size and don't shrink */
+.social-btn svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+
+
+/* OTP Input Styles */
+.otp-input-container {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.otp-input {
+    width: 48px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.otp-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.otp-input:disabled {
+    background: #f1f5f9;
+    cursor: not-allowed;
+}
+
+/* Verification Message Styles */
+.verification-content {
+    padding: 8px 0;
+    text-align: center;
+}
+
+.verification-message {
+    margin-bottom: 24px;
+}
+
+.success-icon {
+    margin-bottom: 16px;
+}
+
+.message-text {
+    font-size: 1rem;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+.message-subtext {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* Resend Section */
+.resend-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 0;
+    font-size: 0.9rem;
+}
+
+.resend-text {
+    color: #64748b;
+}
+
+.resend-link {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+}
+
+.resend-link:hover:not(:disabled) {
+    text-decoration: underline;
+    color: #2563eb;
+}
+
+.resend-link:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Verification Actions */
+.verification-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.verify-button {
+    width: 100%;
+    padding: 14px;
+    background: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.verify-button:hover:not(:disabled) {
+    background: #16a34a;
+}
+
+.verify-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.change-email-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.change-email-link:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+/* Spinner for buttons */
+.spinner {
+    animation: spin 1s linear infinite;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.otp-input-container {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    margin: 16px 0 !important;
+    flex-wrap: nowrap !important;
+}
+
+.otp-input {
+    width: 45px !important;
+    height: 50px !important;
+    text-align: center !important;
+    font-size: 18px !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    outline: none !important;
+    transition: all 0.2s !important;
+    background-color: #fff !important;
+}
+
+.otp-input:focus {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2) !important;
+}
+
+.verify-button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+.verify-button:not(:disabled):hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+}
+/* ================= MOBILE RESPONSIVE FIX ================= */
+
+@media (max-width: 768px) {
+
+    .header-container {
+        padding: 10px 0 16px;
+    }
+
+    .header-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        gap: 10px;
+    }
+
+    /* LOGO LEFT */
+    .logo-section {
+        margin-left: 0 !important;
+        width: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    .logo {
+        height: 72px;
+        width: auto;
+        max-width: 190px;
+        object-fit: contain;
+    }
+
+    /* LOGIN BUTTON RIGHT */
+    .action-section {
+        margin-right: 0 !important;
+        width: auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .login-btn {
+        margin-right: 0 !important;
+        padding: 10px 16px;
+        font-size: 12px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    /* CONTACT BUTTONS */
+    .mobile-contact-section {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+        padding: 0 10px;
+        margin-top: 14px;
+    }
+
+    .mobile-contact-item {
+        flex: 1;
+        min-width: 0;
+        padding: 10px 6px;
+        font-size: 11px;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .mobile-contact-item span {
+        white-space: nowrap;
+    }
+
+    .mobile-contact-item svg {
+        width: 16px;
+        height: 16px;
+    }
+}

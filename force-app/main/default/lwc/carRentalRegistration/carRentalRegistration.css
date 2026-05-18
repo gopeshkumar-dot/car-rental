@@ -1,0 +1,201 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: top;
+    background-color: white; 
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap; /* Allow wrapping of flex items */
+}
+
+.image-container img {
+    width: 900px;
+    max-width: 900px; /* Maximum width for larger screens */
+    /* border-radius: 10px; */
+}
+
+.form-container {
+    background-color: white;
+    padding: 20px;
+    /* border-radius: 15px; */
+    /* box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); */
+    width: 100%;
+    max-width: 400px; /* Maximum width for larger screens */
+    /* margin-top: 20px; */
+}
+
+.form-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 20px;
+}
+
+.form lightning-input {
+    margin-bottom: 20px;
+}
+
+.signup-button {
+    background-color: #FFA500;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #666666;
+}
+
+.login-link a {
+    color: #FFA500;
+    text-decoration: none;
+}
+
+.spinner-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    position: relative;
+    height: 40px;
+}
+
+.submit-status {
+    text-align: center;
+    color: #475569;
+    font-size: 13px;
+    margin: 0 0 10px;
+}
+
+.premium-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 20, 0.56);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 200ms ease-out;
+}
+
+.premium-modal {
+    width: min(92vw, 560px);
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(128, 90, 213, 0.25);
+    padding: 26px 24px 20px;
+    box-shadow: 0 24px 60px rgba(14, 18, 40, 0.25);
+    animation: popIn 260ms cubic-bezier(0.22, 0.9, 0.22, 1);
+}
+
+.premium-modal-header h3 {
+    margin: 0;
+    font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+    color: #2d1d56;
+    font-weight: 700;
+}
+
+.premium-modal-body p {
+    margin: 14px 0 0;
+    font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+    color: #3f3f46;
+    line-height: 1.5;
+}
+
+.premium-modal-footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.premium-modal-btn {
+    min-width: 96px;
+    border: 2px solid #6f46ae;
+    background: linear-gradient(135deg, #6f46ae 0%, #7d5ab6 100%);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: transform 160ms ease, filter 160ms ease;
+}
+
+.premium-modal-btn:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popIn {
+    0% { opacity: 0; transform: translateY(18px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Media Queries for Responsiveness */
+
+/* Mobile Devices */
+@media only screen and (max-width: 600px) {
+    .container {
+        flex-direction: column;
+        align-items: center; /* Center align items on small screens */
+    }
+    
+    .image-container img {
+        max-width: 100%; /* Full width on small screens */
+    }
+
+    .form-container {
+        width: 90%; /* Smaller width for form on mobile */
+        padding: 15px; /* Reduced padding */
+    }
+
+    .premium-modal {
+        padding: 20px 16px 16px;
+    }
+
+    .premium-modal-footer {
+        justify-content: center;
+    }
+
+    .premium-modal-btn {
+        width: 100%;
+    }
+}
+
+/* Tablets */
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+    .container {
+        flex-direction: row;
+        justify-content: space-around; /* Adjust spacing for tablets */
+    }
+
+    .form-container {
+        width: 80%; /* Slightly wider form on tablets */
+    }
+}
+
+/* Desktops */
+@media only screen and (min-width: 1025px) {
+    .container {
+        flex-direction: row;
+        justify-content: space-between; /* Even spacing for larger screens */
+    }
+
+    .form-container {
+        width: 400px; /* Fixed width for form on desktops */
+    }
+}

@@ -1,0 +1,226 @@
+<template>
+    <div class="dc-home-page">
+        <!-- Header / Navigation -->
+        <header class={headerClass}>
+            <div class={headerInnerClass}>
+                <button class="hamburger" aria-label={toggleMenuAria} onclick={handleToggleMenu}>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                
+                 <!--   <template if:true={showButton}>
+                         <div class="btn-container">
+                        <lightning-button 
+                             
+                             icon-name="utility:home"
+                            onclick={handleHomeClick}>
+                        </lightning-button>
+                        </div>
+
+                    </template>-->
+
+              
+                <nav class="nav-left" role="navigation">
+                    <template for:each={leftNavTabs} for:item="tab">
+                        <div key={tab.id} class="nav-item-wrap">
+                            <template if:true={tab.hasChildren}>
+                                <div class="nav-item-with-dropdown">
+                                    <a href={tab.siteUrl} class={tab.navLinkClass} data-path={tab.path} data-has-children="true" data-tab-id={tab.id} onclick={handleNavClick}>{tab.displayName}</a>
+                                    <div class={tab.dropdownClass}>
+                                        <div class="dropdown-inner">
+                                            <div class="dropdown-column dropdown-column-block">
+                                                <div class="dropdown-heading">{tab.displayName}</div>
+                                                <div class="dropdown-children-block">
+                                                    <template for:each={tab.children} for:item="child">
+                                                        <a key={child.id} href={child.siteUrl} class={child.dropdownLinkClass} data-path={child.path} onclick={handleNavClick}>{child.displayName}</a>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={tab.hasChildren}>
+                                <a href={tab.siteUrl} class={tab.navLinkClass} data-path={tab.path} onclick={handleNavClick}>{tab.displayName}</a>
+                            </template>
+                        </div>
+                    </template>
+                </nav>
+            
+                <nav class="nav-right" role="navigation">
+                    <div class="search-section" style="margin-right: 1rem; display: flex; align-items: center; position: relative;">
+                        <lightning-input 
+                            type="search"
+                            placeholder="Search car..." 
+                            variant="label-hidden"
+                            value={searchTerm}
+                            onchange={handleSearchTermChange}
+                            onclick={handleSearchClick}
+                            oncommit={handleSearchCommit}
+                            class="search-bar">
+                        </lightning-input>
+                        <lightning-button-icon 
+                            icon-name="utility:search"
+                            variant="border-filled"
+                            alternative-text="Search"
+                            title="Search"
+                            onclick={handleSearchCommit}
+                            class="slds-m-left_xx-small">
+                        </lightning-button-icon>
+                        
+                        <template if:true={showDropdown}>
+                            <div class="search-dropdown slds-dropdown slds-dropdown_left slds-dropdown_medium" role="listbox" onmousedown={handleDropdownMouseDown} style="position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 1rem; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: max-content; min-width: 250px; display: flex; flex-direction: column; gap: 0.5rem;">
+                                <template if:true={hasSuggestions}>
+                                    <div class="dropdown-section-label slds-text-title_caps slds-m-top_small slds-m-bottom_x-small" style="color: #6b7280;">{textSuggestions}</div>
+                                    <template for:each={suggestions} for:item="s">
+                                        <button
+                                            key={s.id}
+                                            type="button"
+                                            class="dropdown-item dropdown-item-history slds-button slds-button_neutral slds-size_1-of-1"
+                                            data-text={s.text}
+                                            onclick={handleSuggestionClick}
+                                            style="display: flex; align-items: center; justify-content: flex-start; padding: 0.5rem; margin-top: 0.25rem;"
+                                        >
+                                            <span class="dropdown-icon history-icon slds-m-right_x-small" aria-hidden="true">&#128269;</span>
+                                            <span>{s.text} <span style="font-size: 0.85em; color: #6b7280; margin-left: 4px;">- {s.subtitle}</span></span>
+                                        </button>
+                                    </template>
+                                </template>
+
+                            </div>
+                        </template>
+                    </div>
+                    <div class="language-selector">
+                        <lightning-combobox
+                            name="language"
+                            label="Language"
+                            value={siteLocale}
+                            options={languageOptions}
+                            onchange={handleLanguageChange}
+                            variant="label-hidden"
+                            placeholder="Select a..."
+                            dropdown-alignment="auto">
+                        </lightning-combobox>
+                    </div>
+                    <template for:each={rightNavTabs} for:item="tab">
+                        <div key={tab.id} class="nav-item-wrap">
+                            <template if:true={tab.hasChildren}>
+                                <div class="nav-item-with-dropdown">
+                                    <a href={tab.siteUrl} class={tab.navLinkClass} data-path={tab.path} data-has-children="true" data-tab-id={tab.id} onclick={handleNavClick}>{tab.displayName}</a>
+                                    <div class={tab.manageRentalsDropdownClass}>
+                                        <div class="dropdown-inner">
+                                            <div class="dropdown-column dropdown-column-block">
+                                                <div class="dropdown-heading">{tab.displayName}</div>
+                                                <div class="dropdown-children-block">
+                                                    <template for:each={tab.children} for:item="child">
+                                                        <a key={child.id} href={child.siteUrl} class={child.dropdownLinkClass} data-path={child.path} onclick={handleNavClick}>{child.displayName}</a>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={tab.hasChildren}>
+                                <a href={tab.siteUrl} class={tab.navLinkClass} data-path={tab.path} onclick={handleNavClick}>{tab.displayName}</a>
+                            </template>
+                        </div>
+                    </template>
+                    
+                    <!-- NEW LOGGED IN USER PROFILE DROPDOWN -->
+                    <template if:true={isLoggedIn}>
+                        <div class="nav-item-wrap" style="margin-left: 10px;">
+                            <div class="nav-item-with-dropdown profile-dropdown">
+                                <a href="#" class="nav-link" style="text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                                    </svg>
+                                    {userName}
+                                    <span style="font-size: 10px;">▼</span>
+                                </a>
+                                <div class="dropdown-menu profile-dropdown-menu">
+                                    <div class="dropdown-inner" style="background-color: #111; padding: 10px 0; min-width: 200px;">
+                                        <div class="dropdown-column dropdown-column-block">
+                                            <div class="dropdown-children-block" style="display: flex; flex-direction: column;">
+                                                <a href="javascript:void(0);" data-tab="profile" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleProfileNav}>PROFILE SETTINGS</a>
+                                                <a href="javascript:void(0);" data-tab="password" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleProfileNav}>UPDATE PASSWORD</a>
+                                                <a href="javascript:void(0);" data-tab="booking" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleProfileNav}>MY BOOKING</a>
+                                                <a href="javascript:void(0);" data-tab="post_testimonial" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleProfileNav}>POST A TESTIMONIAL</a>
+                                                <a href="javascript:void(0);" data-tab="my_testimonial" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleProfileNav}>MY TESTIMONIAL</a>
+                                                <a href="javascript:void(0);" class="dropdown-link" style="color: white; font-weight: 600; font-size: 12px; padding: 12px 20px;" onclick={handleSignOut}>SIGN OUT</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </nav>
+            </div>
+            <!-- Mobile menu overlay -->
+            <div class={mobileMenuClass}>
+                <nav class="mobile-nav" role="navigation">
+                    <div class="mobile-lang-row">
+                        <lightning-combobox
+                            name="language-mobile"
+                            label="Language"
+                            value={siteLocale}
+                            options={languageOptions}
+                            onchange={handleLanguageChange}
+                            variant="label-hidden"
+                            placeholder="Select a..."
+                            dropdown-alignment="auto">
+                        </lightning-combobox>
+                    </div>
+                    <template for:each={navTabsWithClasses} for:item="tab">
+                        <div key={tab.id} class="mobile-nav-item-wrap">
+                            <template if:true={tab.hasChildren}>
+                                <div class="mobile-nav-group">
+                                    <a href={tab.siteUrl} class={tab.mobileNavLinkClass} data-path={tab.path} data-has-children="true" data-tab-id={tab.id} onclick={handleMobileNavClick}>{tab.displayName}</a>
+                                    <button type="button" class="mobile-nav-expand" data-tab-id={tab.id} aria-expanded={tab.isSubmenuOpen} aria-label={toggleSubmenuAria} onclick={handleToggleSubmenu}>
+                                        <span class="expand-icon" aria-hidden="true">&#9660;</span>
+                                    </button>
+                                    <div class={tab.submenuClass}>
+                                        <template for:each={tab.children} for:item="child">
+                                            <a key={child.id} href={child.siteUrl} class={child.mobileSubLinkClass} data-path={child.path} onclick={handleMobileNavClick}>
+                                                <span class="mobile-nav-sublink-icon" aria-hidden="true">{child.icon}</span>
+                                                <span class="mobile-nav-sublink-copy">
+                                                    <span class="mobile-nav-sublink-title">{child.displayName}</span>
+                                                    <span class="mobile-nav-sublink-subtitle">{child.subtitle}</span>
+                                                </span>
+                                            </a>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={tab.hasChildren}>
+                                <a href={tab.siteUrl} class={tab.mobileNavLinkClass} data-path={tab.path} onclick={handleMobileNavClick}>{tab.displayName}</a>
+                            </template>
+                        </div>
+                    </template>
+                </nav>
+            </div>
+            <div class={mobileOverlayClass} onclick={handleToggleMenu} role="presentation"></div>
+        </header>
+
+        <template if:true={reportOpen}>
+            <section class="report-modal-backdrop" onclick={closeReport}>
+                <div class="report-modal-shell" onclick={keepReportOpen}>
+                    <div class="report-modal-header">
+                        <h2 class="report-modal-title">User Metrics Dashboard</h2>
+                        <button
+                            type="button"
+                            class="report-close-btn"
+                            aria-label="Close report"
+                            title="Close report"
+                            onclick={closeReport}>
+                            <span class="report-close-glyph" aria-hidden="true">✕</span>
+                        </button>
+                    </div>
+                    
+                </div>
+            </section>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,91 @@
+<template>
+    <div class="navbar">    
+        <div class="w3-bar w3-black" style="display: flex; align-items: center; padding: 10px;">
+            <!-- Logo moved to headerNav.html as per new design -->
+
+            <button class="w3-button w3-bar-item toggle-button" onclick={toggleMenu}>☰ Menu</button>
+            <div class="menu-items" style="width: 100%; display: flex;">
+                <div class="nav-links" style="display: flex; flex-wrap: wrap; margin-left: 20px;">
+                    <div class="w3-dropdown-hover w3-mobile">
+                         <template if:true={hideHomeNavBar}>
+                        <button class="w3-button" style="text-transform: uppercase;" onclick={handleHomeNavBar}>Home</button>
+                         </template>
+                    </div>
+                    <div class="w3-dropdown-hover w3-mobile">
+                        <button class="w3-button" style="text-transform: uppercase;" onclick={handleAboutPage}>About Us</button>
+                    </div>
+                     <div class="w3-dropdown-hover w3-mobile">
+                        <button class="w3-button" style="text-transform: uppercase;" onclick={handleOfferPage}>Car Listing</button>
+                    </div>
+                    <div class="w3-dropdown-hover w3-mobile">
+                        <button class="w3-button" style="text-transform: uppercase;" onclick={handleCareersPage}>FAQs</button>
+                    </div>
+                    <div class="w3-dropdown-hover w3-mobile">
+                        <button class="w3-button" style="text-transform: uppercase;" onclick={handleContactPage}>Contact Us</button>
+                    </div>
+                    <div class="w3-dropdown-hover w3-mobile">
+                        <button class="w3-button" style="text-transform: uppercase;">Payment Details</button>
+                    </div>
+                </div>
+
+                <div class="auth-buttons" style="display: flex; margin-left: auto; align-items: center; padding-right: 20px;">
+                    <!-- User Account / Search Section -->
+                    <div class="w3-dropdown-hover w3-mobile" style="margin-right: 15px;">
+                        <button class="w3-button" style="border: 1px solid white; border-radius: 50%; padding: 6px 10px; background: transparent;">
+                            <lightning-icon icon-name="utility:user" size="x-small" variant="inverse"></lightning-icon>
+                        </button>
+                        <div class="w3-dropdown-content w3-bar-block w3-dark-grey" style="right: 0; min-width: 150px; z-index: 100;">
+                            <template if:false={isLoggedIn}>
+                                <button class="w3-button" onclick={handleSignUptPage}>Sign Up</button>
+                                <button class="w3-button" onclick={handleLoginPage}>Login</button>
+                            </template>
+                            <template if:true={isLoggedIn}>
+                                <button class="w3-button" onclick={handleProfilePage}>{userName} Profile</button>
+                                <button class="w3-button" onclick={handleLogout}>Logout</button>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <div class="search-container">
+                        <input type="text" placeholder="Search..." style="padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; min-width: 200px;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+         <template if:true={aboutPage}>
+         <c-car-renter-about></c-car-renter-about>
+         </template>
+
+         <template if:true={offerPage}>
+         <c-car-rental-offers></c-car-rental-offers>
+         </template>
+
+         <template if:true={careersPage}>
+         <c-careers-page></c-careers-page>
+         </template>
+
+         <template if:true={contactPage}>
+         <c-contact-us></c-contact-us>
+         </template>
+
+         <template if:true={firstpage}>
+         <c-first-Page></c-first-Page>
+         </template>
+
+         <template if:true={Welcome}>
+         <c-car-Rental-welcome></c-car-Rental-welcome>
+         </template>
+
+          <template if:true={signup}>
+         <c-car-rental-registration onlogin={handleLoginPage}></c-car-rental-registration>
+         </template>
+
+          <template if:true={login}>
+         <c-sin-up-page onsinup={handSignUpPage} onloginsuccess={handleLoginSuccess}></c-sin-up-page>
+         </template>
+
+        
+
+         
+</template>

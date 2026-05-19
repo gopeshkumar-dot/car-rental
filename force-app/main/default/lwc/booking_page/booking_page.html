@@ -32,6 +32,40 @@
                             <span class="label">Total Charged:</span>
                             <span class="value grand-total-highlight">₹{grandTotal}</span>
                         </div>
+                        <div class="receipt-row">
+                            <span class="label">Booking Status:</span>
+                            <span class={bookingStatusBadgeClass}>{bookingStatus}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="label">Payment Status:</span>
+                            <span class={paymentStatusBadgeClass}>{paymentStatus}</span>
+                        </div>
+                        <template if:true={isUpiVerified}>
+                            <div class="receipt-row">
+                                <span class="label">Payment Method:</span>
+                                <span class="value">UPI / QR Code</span>
+                            </div>
+                            <div class="receipt-row">
+                                <span class="label">Transaction UTR:</span>
+                                <span class="value font-highlight text-indigo">{upiTransactionId}</span>
+                            </div>
+                        </template>
+                        <template if:true={isCardVerified}>
+                            <div class="receipt-row">
+                                <span class="label">Payment Method:</span>
+                                <span class="value">Credit / Debit Card</span>
+                            </div>
+                            <div class="receipt-row">
+                                <span class="label">Cardholder:</span>
+                                <span class="value">{cardNameInput}</span>
+                            </div>
+                        </template>
+                        <template if:false={paymentStatusPaid}>
+                            <div class="receipt-row">
+                                <span class="label">Payment Method:</span>
+                                <span class="value">Pay at Station</span>
+                            </div>
+                        </template>
                     </div>
                 </div>
                 <div class="email-notice">
@@ -322,35 +356,7 @@
                                 ></lightning-input>
                             </div>
 
-                            <!-- Dynamic Booking Picklists (Status & Payment Status) -->
-                            <div class="grid-2-col mb-4">
-                                <div class="form-group">
-                                    <lightning-combobox
-                                        name="bookingStatus"
-                                        label="Booking Status"
-                                        value={bookingStatus}
-                                        placeholder="Select Status"
-                                        options={statusOptions}
-                                        onchange={handleInputChange}
-                                        data-id="bookingStatus"
-                                        required
-                                        class="premium-input"
-                                    ></lightning-combobox>
-                                </div>
-                                <div class="form-group">
-                                    <lightning-combobox
-                                        name="paymentStatus"
-                                        label="Payment Status"
-                                        value={paymentStatus}
-                                        placeholder="Select Payment Status"
-                                        options={paymentStatusOptions}
-                                        onchange={handleInputChange}
-                                        data-id="paymentStatus"
-                                        required
-                                        class="premium-input"
-                                    ></lightning-combobox>
-                                </div>
-                            </div>
+                            <!-- Booking status and payment status are managed automatically based on user choices -->
 
                             <!-- Premium Extras Checklist -->
                             <div class="extras-section mt-4 mb-4">
@@ -484,11 +490,11 @@
                                     </div>
                                     <div class="summary-item">
                                         <span class="sum-label">Booking Status:</span>
-                                        <span class="sum-value text-capitalize">{bookingStatus}</span>
+                                        <span class={bookingStatusBadgeClass}>{bookingStatus}</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="sum-label">Payment Status:</span>
-                                        <span class="sum-value text-capitalize">{paymentStatus}</span>
+                                        <span class={paymentStatusBadgeClass}>{paymentStatus}</span>
                                     </div>
                                     <div class="summary-item full-width">
                                         <span class="sum-label">Rental Duration:</span>
@@ -546,6 +552,120 @@
 
                                 </div>
                             </div>
+
+                            <!-- UPI Payment Verification Box -->
+                            <template if:true={isUpiSelected}>
+                                <div class="payment-details-box upi-box animate-slide-in">
+                                    <div class="upi-header">
+                                        <span class="upi-logo">UPI Pay</span>
+                                        <span class="upi-timer">Expires in: <strong>{upiCountdownStr}</strong></span>
+                                    </div>
+                                    <div class="upi-qr-body">
+                                        <div class="upi-qr-frame">
+                                            <img src={upiQrCodeUrl} class="upi-qr-image" alt="Scan to Pay" />
+                                        </div>
+                                        <div class="upi-instructions">
+                                            <p class="pay-amount-label">Amount to Pay</p>
+                                            <p class="pay-amount-val">₹{grandTotal}</p>
+                                            <p class="pay-desc-text">Scan the QR code with any UPI app (GPay, PhonePe, Paytm, BHIM) to pay instantly.</p>
+                                        </div>
+                                    </div>
+                                    <div class="upi-verification-form">
+                                        <lightning-input 
+                                            type="text" 
+                                            label="UPI Transaction ID / UTR" 
+                                            placeholder="Enter 12-digit UPI reference number"
+                                            value={upiTransactionId}
+                                            onchange={handleInputChange}
+                                            data-id="upiTransactionId"
+                                            max-length="12"
+                                            min-length="12"
+                                            required
+                                            class="premium-input mb-3"
+                                            disabled={isUpiVerified}
+                                        ></lightning-input>
+                                        <button class="btn-verify" onclick={handleVerifyUpi} disabled={isUpiVerified}>
+                                            <template if:true={isVerifyingUpi}>
+                                                <div class="spinner-inline slds-m-right_x-small"></div>
+                                            </template>
+                                            {upiVerificationButtonLabel}
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Credit / Debit Card Verification Box -->
+                            <template if:true={isCardSelected}>
+                                <div class="payment-details-box card-box animate-slide-in">
+                                    <div class="card-header">
+                                        <span class="card-logo">Secure Card Payment</span>
+                                        <span class="card-pci-badge">🔒 PCI-DSS Compliant</span>
+                                    </div>
+                                    <div class="card-form-body">
+                                        <div class="form-group mb-3">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="Cardholder Name" 
+                                                placeholder="As printed on card"
+                                                value={cardNameInput}
+                                                onchange={handleInputChange}
+                                                data-id="cardNameInput"
+                                                required
+                                                class="premium-input"
+                                                disabled={isCardVerified}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <lightning-input 
+                                                type="text" 
+                                                label="Card Number" 
+                                                placeholder="0000 0000 0000 0000"
+                                                value={cardNumber}
+                                                onchange={handleCardNumberChange}
+                                                data-id="cardNumber"
+                                                required
+                                                class="premium-input"
+                                                disabled={isCardVerified}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="grid-2-col mb-3">
+                                            <div class="form-group">
+                                                <lightning-input 
+                                                    type="text" 
+                                                    label="Expiry Date" 
+                                                    placeholder="MM/YY"
+                                                    value={cardExpiry}
+                                                    onchange={handleCardExpiryChange}
+                                                    data-id="cardExpiry"
+                                                    required
+                                                    class="premium-input"
+                                                    disabled={isCardVerified}
+                                                ></lightning-input>
+                                            </div>
+                                            <div class="form-group">
+                                                <lightning-input 
+                                                    type="password" 
+                                                    label="CVV" 
+                                                    placeholder="123"
+                                                    value={cardCvv}
+                                                    onchange={handleInputChange}
+                                                    data-id="cardCvv"
+                                                    max-length="3"
+                                                    required
+                                                    class="premium-input"
+                                                    disabled={isCardVerified}
+                                                ></lightning-input>
+                                            </div>
+                                        </div>
+                                        <button class="btn-verify" onclick={handleVerifyCard} disabled={isCardVerified}>
+                                            <template if:true={isVerifyingCard}>
+                                                <div class="spinner-inline slds-m-right_x-small"></div>
+                                            </template>
+                                            {cardVerificationButtonLabel}
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
 
                             <!-- Step Navigation Footer -->
                             <div class="step-footer mt-5">

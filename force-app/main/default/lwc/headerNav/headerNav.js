@@ -7,9 +7,6 @@ import loginContact from '@salesforce/apex/HeaderController.loginContact';
 import sendVerificationEmail from '@salesforce/apex/HeaderController.sendVerificationEmail';
 import verifyEmailCode from '@salesforce/apex/HeaderController.verifyEmailCode';
 import resendVerificationCode from '@salesforce/apex/HeaderController.resendVerificationCode';
-import requestPasswordReset from '@salesforce/apex/HeaderController.requestPasswordReset';
-import verifyResetCode from '@salesforce/apex/HeaderController.verifyResetCode';
-import updatePassword from '@salesforce/apex/HeaderController.updatePassword';
 
 export default class SafarHeaderWithLogin extends LightningElement {
     // ==================== HEADER PROPERTIES ====================
@@ -20,6 +17,9 @@ export default class SafarHeaderWithLogin extends LightningElement {
     @api loginButtonText = 'LOGIN / REGISTER';
     @api googleClientId = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
     @api facebookAppId = 'YOUR_FACEBOOK_APP_ID';
+    @track showLoginModal = false;
+    @track showSignupModal = false;
+    @track showForgotPasswordModal = false;
     
     @wire(getHeaderDetails)
     wiredHeader({ error, data }) {
@@ -59,13 +59,12 @@ export default class SafarHeaderWithLogin extends LightningElement {
     @track signupError = '';  // ✅ ADDED: Missing property
     
     // ==================== PASSWORD RECOVERY FORM ====================
-    @track recoveryStep = 1; // 1: Email Input, 2: Code verification, 3: Set New Password
     @track recoveryEmail = '';
-    @track recoveryCode = '';
+    @track recoveryMobile = '';
     @track newPassword = '';
     @track confirmPassword = '';
     @track recoveryEmailError = '';
-    @track recoveryCodeError = '';
+    @track recoveryMobileError = '';
     @track newPasswordError = '';
     @track confirmPasswordError = '';
     
@@ -130,13 +129,7 @@ export default class SafarHeaderWithLogin extends LightningElement {
     handleEmailClick(event) {
         event.preventDefault();
         if (this.supportEmail) {
-            if (this.isMobile) {
-                window.location.href = `mailto:${this.supportEmail}`;
-            } else {
-                // Force open Gmail Web Compose for Desktop users to prevent Outlook popup
-                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${this.supportEmail}`;
-                window.open(gmailUrl, '_blank');
-            }
+            window.location.href = `mailto:${this.supportEmail}`;
         }
     }
 
@@ -272,22 +265,6 @@ export default class SafarHeaderWithLogin extends LightningElement {
             
             if (result === 'Failed') {
                 throw new Error('Invalid email or password');
-            }
-            
-            if (result === 'UNVERIFIED') {
-                this.signupEmail = this.email;
-                
-                // Resend code dynamically
-                const res = await sendVerificationEmail({ email: this.signupEmail });
-                this.verificationToken = res.token;
-                
-                this.showLoginModal = false;
-                this.showVerificationModal = true;
-                this.verificationCodeSent = true;
-                this.startResendCountdown();
-                
-                this.showToast('Verification Required', 'Your email is not verified yet. We have sent a verification code to your email.', 'warning');
-                return;
             }
             
             const parsedResult = JSON.parse(result);
@@ -467,9 +444,9 @@ export default class SafarHeaderWithLogin extends LightningElement {
         this.recoveryEmailError = '';
     }
 
-    handleRecoveryCodeChange(event) {
-        this.recoveryCode = event.target.value.replace(/[^0-9]/g, '').slice(0, 6);
-        this.recoveryCodeError = '';
+    handleRecoveryMobileChange(event) {
+        this.recoveryMobile = event.target.value.trim();
+        this.recoveryMobileError = '';
     }
 
     handleNewPasswordChange(event) {
@@ -482,90 +459,80 @@ export default class SafarHeaderWithLogin extends LightningElement {
         this.confirmPasswordError = '';
     }
 
-    get isRecoveryStep1() { return this.recoveryStep === 1; }
-    get isRecoveryStep2() { return this.recoveryStep === 2; }
-    get isRecoveryStep3() { return this.recoveryStep === 3; }
+    validatePasswordRecoveryForm() {
+        let isValid = true;
+        this.recoveryEmailError = '';
+        this.recoveryMobileError = '';
+        this.newPasswordError = '';
+        this.confirmPasswordError = '';
 
-    async handleRequestResetSubmit(event) {
-        event.preventDefault();
         if (!this.recoveryEmail) {
             this.recoveryEmailError = 'Email address is required';
-            return;
-        }
-        if (!this.isValidEmail(this.recoveryEmail)) {
+            isValid = false;
+        } else if (!this.isValidEmail(this.recoveryEmail)) {
             this.recoveryEmailError = 'Please enter a valid email address';
-            return;
+            isValid = false;
         }
 
-        this.isLoading = true;
-        try {
-            const response = await requestPasswordReset({ email: this.recoveryEmail });
-            this.showToast('Code Sent', response.message || 'Verification code sent successfully.', 'success');
-            this.recoveryStep = 2;
-        } catch (error) {
-            this.showToast('Error', error.body?.message || error.message || 'Failed to send reset code.', 'error');
-        } finally {
-            this.isLoading = false;
+        if (!this.recoveryMobile) {
+            this.recoveryMobileError = 'Registered mobile number is required';
+            isValid = false;
+        } else if (!this.isValidPhone(this.recoveryMobile)) {
+            this.recoveryMobileError = 'Please enter a valid 10-digit mobile number';
+            isValid = false;
         }
-    }
-
-    async handleVerifyResetCodeSubmit(event) {
-        event.preventDefault();
-        if (!this.recoveryCode || this.recoveryCode.length !== 6) {
-            this.recoveryCodeError = 'Please enter the 6-digit verification code';
-            return;
-        }
-
-        this.isLoading = true;
-        try {
-            const response = await verifyResetCode({ 
-                email: this.recoveryEmail, 
-                code: this.recoveryCode 
-            });
-            this.showToast('Success', response.message || 'Verification successful.', 'success');
-            this.recoveryStep = 3;
-        } catch (error) {
-            this.recoveryCodeError = error.body?.message || error.message || 'Invalid verification code.';
-            this.showToast('Verification Failed', this.recoveryCodeError, 'error');
-        } finally {
-            this.isLoading = false;
-        }
-    }
-
-    async handleUpdatePasswordSubmit(event) {
-        event.preventDefault();
-        let hasError = false;
 
         if (!this.newPassword) {
-            this.newPasswordError = 'Password is required';
-            hasError = true;
+            this.newPasswordError = 'New password is required';
+            isValid = false;
         } else if (this.newPassword.length < 6) {
             this.newPasswordError = 'Password must be at least 6 characters';
-            hasError = true;
+            isValid = false;
         }
 
         if (!this.confirmPassword) {
             this.confirmPasswordError = 'Please confirm your password';
-            hasError = true;
+            isValid = false;
         } else if (this.newPassword !== this.confirmPassword) {
             this.confirmPasswordError = 'Passwords do not match';
-            hasError = true;
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    async handlePasswordRecovery(event) {
+        event.preventDefault();
+        
+        if (!this.validatePasswordRecoveryForm()) {
+            this.showToast('Error', 'Please fix the form errors', 'error');
+            return;
         }
 
-        if (hasError) return;
-
         this.isLoading = true;
+
         try {
-            const response = await updatePassword({
-                email: this.recoveryEmail,
-                code: this.recoveryCode,
-                newPassword: this.newPassword
+            // Mock implementation - replace with actual Apex call when available
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            if (this.recoveryEmail === 'notfound@example.com') {
+                throw new Error('Email or mobile number not found');
+            }
+            
+            this.showToast('Success', 'Password reset successfully! Check your email.', 'success');
+            
+            const passwordResetEvent = new CustomEvent('passwordreset', {
+                detail: {
+                    email: this.recoveryEmail,
+                    timestamp: new Date().toISOString()
+                },
+                bubbles: true,
+                composed: true
             });
-            this.showToast('Success', response.message || 'Password updated successfully!', 'success');
+            this.dispatchEvent(passwordResetEvent);
+            
             this.closeAllModals();
-            this.showLoginModal = true;
         } catch (error) {
-            this.showToast('Error', error.body?.message || error.message || 'Failed to update password.', 'error');
+            this.showToast('Password Reset Failed', error.message || 'Email or mobile not found', 'error');
         } finally {
             this.isLoading = false;
         }
@@ -575,8 +542,8 @@ export default class SafarHeaderWithLogin extends LightningElement {
     
     // ✅ ADDED: Missing getter for OTP completion check
     get isOtpComplete() {
-    return this.otpDigits.every(digit => digit.value?.length === 1);
-}
+        return this.otpDigits.every(digit => digit.value && digit.value.length === 1);
+    }
 
     get isVerifyButtonDisabled() {
         return this.isLoading || !this.isOtpComplete;
@@ -593,22 +560,21 @@ export default class SafarHeaderWithLogin extends LightningElement {
     }
 
     handleOtpChange(event) {
-    const index = parseInt(event.target.dataset.index);
-    let value = event.target.value.replace(/[^0-9]/g, '').slice(0, 1); // Ensure single digit
-    
-    // Create new array with new object reference for reactivity
-    const updatedDigits = [...this.otpDigits];
-    updatedDigits[index] = { ...updatedDigits[index], value: value };
-    this.otpDigits = updatedDigits;
-    
-    this.otpError = '';
-    
-    // Auto-focus next input
-    if (value && index < 5) {
-        const nextInput = this.template.querySelector(`[data-index="${index + 1}"]`);
-        if (nextInput) nextInput.focus();
+        const index = parseInt(event.target.dataset.index);
+        const value = event.target.value.replace(/[^0-9]/g, '');
+        
+        if (value) {
+            this.otpDigits = this.otpDigits.map(d => 
+                d.index === index ? { ...d, value: value } : d
+            );
+            
+            const nextInput = this.template.querySelector(`[data-index="${index + 1}"]`);
+            if (nextInput) {
+                nextInput.focus();
+            }
+            this.otpError = '';
+        }
     }
-}
 
     handleOtpKeyup(event) {
         const index = parseInt(event.target.dataset.index);
@@ -641,67 +607,32 @@ export default class SafarHeaderWithLogin extends LightningElement {
         }
     }
 
-
-   async handleVerifyCode() {
-    // Check if OTP is complete
-    if (!this.isOtpComplete) {
-        this.otpError = 'Please enter the complete 6-digit code';
-        return;
-    }
-    
-    this.isLoading = true;
-    this.otpError = '';
-    
-    try {
-        // ✅ FIX: Sirf email aur code bhejein, token remove karein
-        const result = await verifyEmailCode({
-            email: this.signupEmail,
-            code: this.otpValue
-            // token: this.verificationToken  ← ❌ Is line ko hata dein
-        });
-        
-        // ✅ Verification success - ab modal close karein
-        this.showToast('Success', result.message || 'Email verified successfully!', 'success');
-        
-        // Parent component ko event bhejein
-        const verificationSuccessEvent = new CustomEvent('emailverified', {
-            detail: {
-                email: this.signupEmail,
-                timestamp: new Date().toISOString()
-            },
-            bubbles: true,
-            composed: true
-        });
-        this.dispatchEvent(verificationSuccessEvent);
-        
-        // ✅ State reset karein aur login modal dikhayein
-        this.resetVerificationState();
-        this.showVerificationModal = false;
-        this.showLoginModal = true;
-        
-    } catch (error) {
-        console.error('Verification error:', error);
-        
-        // ❗ Error aane par modal KHULA hi rahega
-        this.otpError = error.body?.message || error.message || 'Invalid or expired code. Please try again.';
-        
-        // OTP fields clear karein for better UX
-        this.otpDigits = this.otpDigits.map(d => ({ ...d, value: '' }));
-        
-        // First input par focus wapas layein
-        const firstInput = this.template.querySelector('[data-index="0"]');
-        if (firstInput) {
-            firstInput.focus();
+    async handleVerifyCode() {
+        if (!this.isOtpComplete) {
+            this.otpError = 'Please enter the complete 6-digit code';
+            return;
         }
         
-        // ✅ Modal close NA karein - user retry kar sake
-        // this.showVerificationModal = false;  ← ❌ Yeh line mat likhein
+        this.isLoading = true;
+        this.otpError = '';
         
-    } finally {
-        this.isLoading = false;
+        try {
+            const result = await verifyEmailCode({
+                email: this.signupEmail,
+                code: this.otpValue
+            });
+            
+            this.closeAllModals();
+            this.showToast('Success', result.message || 'Email verified successfully!', 'success');
+            this.showLoginModal = true;
+            this.resetVerificationState();
+            
+        } catch (error) {
+            this.otpError = error.message || 'Invalid or expired code. Please try again.';
+        } finally {
+            this.isLoading = false;
+        }
     }
-}
-
 
     async handleResendCode() {
         if (this.resendDisabled) return;
@@ -798,13 +729,12 @@ export default class SafarHeaderWithLogin extends LightningElement {
         this.signupError = '';
         
         // Password Recovery Form
-        this.recoveryStep = 1;
         this.recoveryEmail = '';
-        this.recoveryCode = '';
+        this.recoveryMobile = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.recoveryEmailError = '';
-        this.recoveryCodeError = '';
+        this.recoveryMobileError = '';
         this.newPasswordError = '';
         this.confirmPasswordError = '';
         

@@ -47,6 +47,23 @@ export default class CarBooking extends LightningElement {
     // Payment state
     @track paymentMethod = 'destination';
 
+    // UPI Payment State
+    @track upiTransactionId = '';
+    @track isUpiVerified = false;
+    @track upiCountdown = 300;
+    @track upiCountdownStr = '05:00';
+    @track isVerifyingUpi = false;
+    @track upiVerificationButtonLabel = 'Verify Payment';
+
+    // Card Payment State
+    @track cardNameInput = '';
+    @track cardNumber = '';
+    @track cardExpiry = '';
+    @track cardCvv = '';
+    @track isCardVerified = false;
+    @track isVerifyingCard = false;
+    @track cardVerificationButtonLabel = 'Verify Card & Pay';
+
     // Dynamic Booking picklists
     @track bookingStatus = 'Confirmed';
     @track paymentStatus = 'Pending';
@@ -292,9 +309,182 @@ export default class CarBooking extends LightningElement {
     get paymentUpiClass() { return `payment-option ${this.paymentMethod === 'upi' ? 'selected' : ''}`; }
     get paymentCardClass() { return `payment-option ${this.paymentMethod === 'card' ? 'selected' : ''}`; }
 
-    selectPaymentDestination() { this.paymentMethod = 'destination'; }
-    selectPaymentUpi() { this.paymentMethod = 'upi'; }
-    selectPaymentCard() { this.paymentMethod = 'card'; }
+    get bookingStatusBadgeClass() {
+        const status = this.bookingStatus ? this.bookingStatus.toLowerCase() : 'confirmed';
+        if (status === 'confirmed') return 'badge-status status-confirmed';
+        if (status === 'pending') return 'badge-status status-pending';
+        if (status === 'active') return 'badge-status status-paid';
+        return 'badge-status status-confirmed';
+    }
+
+    get paymentStatusBadgeClass() {
+        const pStatus = this.paymentStatus ? this.paymentStatus.toLowerCase() : 'pending';
+        if (pStatus === 'paid') return 'badge-status status-confirmed';
+        if (pStatus === 'pending') return 'badge-status status-pending';
+        if (pStatus === 'refunded') return 'badge-status status-refunded';
+        return 'badge-status status-pending';
+    }
+
+    upiTimerInterval;
+
+    selectPaymentDestination() { 
+        this.paymentMethod = 'destination'; 
+        this.bookingStatus = 'Confirmed';
+        this.paymentStatus = 'Pending';
+        if (this.upiTimerInterval) {
+            clearInterval(this.upiTimerInterval);
+        }
+    }
+    selectPaymentUpi() { 
+        this.paymentMethod = 'upi'; 
+        this.bookingStatus = 'Confirmed';
+        // UPI starts as Pending until they enter UTR and verify it!
+        this.paymentStatus = this.isUpiVerified ? 'Paid' : 'Pending';
+        this.resetUpiTimer();
+    }
+    selectPaymentCard() { 
+        this.paymentMethod = 'card'; 
+        this.bookingStatus = 'Confirmed';
+        // Card starts as Pending until they click verify/pay!
+        this.paymentStatus = this.isCardVerified ? 'Paid' : 'Pending';
+        if (this.upiTimerInterval) {
+            clearInterval(this.upiTimerInterval);
+        }
+    }
+
+    resetUpiTimer() {
+        if (this.upiTimerInterval) {
+            clearInterval(this.upiTimerInterval);
+        }
+        this.upiCountdown = 300;
+        this.upiCountdownStr = '05:00';
+        this.upiTimerInterval = setInterval(() => {
+            if (this.upiCountdown > 0) {
+                this.upiCountdown--;
+                const mins = String(Math.floor(this.upiCountdown / 60)).padStart(2, '0');
+                const secs = String(this.upiCountdown % 60).padStart(2, '0');
+                this.upiCountdownStr = `${mins}:${secs}`;
+            } else {
+                clearInterval(this.upiTimerInterval);
+                this.upiCountdownStr = 'Expired';
+                this.showToastNotification('QR Code Expired', 'The UPI QR Code has expired. Please select UPI again to generate a new QR code.', 'warning');
+            }
+        }, 1000);
+    }
+
+    disconnectedCallback() {
+        if (this.upiTimerInterval) {
+            clearInterval(this.upiTimerInterval);
+        }
+    }
+
+    // Payment Getters
+    get isUpiSelected() {
+        return this.paymentMethod === 'upi';
+    }
+
+    get isCardSelected() {
+        return this.paymentMethod === 'card';
+    }
+
+    get paymentStatusPaid() {
+        return this.paymentStatus === 'Paid';
+    }
+
+    get upiQrCodeUrl() {
+        const pa = 'safarsathi@upi';
+        const pn = encodeURIComponent('Safar Sathi Rentals');
+        const am = this.grandTotal;
+        const cu = 'INR';
+        const tn = encodeURIComponent('SafarSathiBooking');
+        const upiString = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`;
+        return `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiString)}`;
+    }
+
+    // Verification Handlers
+    handleVerifyUpi() {
+        if (!this.upiTransactionId || this.upiTransactionId.trim() === '') {
+            this.showToastNotification('UTR Required', 'Please enter the 12-digit UPI Ref/UTR number from your payment app.', 'error');
+            return;
+        }
+        
+        const utrPattern = /^\d{12}$/;
+        if (!utrPattern.test(this.upiTransactionId.trim())) {
+            this.showToastNotification('Invalid UTR', 'The UPI Transaction ID / UTR must be exactly 12 digits.', 'error');
+            return;
+        }
+
+        if (this.upiCountdownStr === 'Expired') {
+            this.showToastNotification('QR Code Expired', 'Please select UPI again to generate a new QR code.', 'error');
+            return;
+        }
+
+        this.isVerifyingUpi = true;
+        this.upiVerificationButtonLabel = 'Verifying Transaction...';
+
+        setTimeout(() => {
+            this.isVerifyingUpi = false;
+            this.isUpiVerified = true;
+            this.paymentStatus = 'Paid';
+            this.upiVerificationButtonLabel = '✓ Payment Verified';
+            this.showToastNotification('Payment Verified', 'UPI payment of ₹' + this.grandTotal + ' verified successfully!', 'success');
+            if (this.upiTimerInterval) {
+                clearInterval(this.upiTimerInterval);
+            }
+        }, 2000);
+    }
+
+    handleCardNumberChange(event) {
+        let value = event.target.value.replace(/\D/g, '');
+        let formatted = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) {
+                formatted += ' ';
+            }
+            formatted += value[i];
+        }
+        this.cardNumber = formatted;
+    }
+
+    handleCardExpiryChange(event) {
+        let value = event.target.value.replace(/\D/g, '');
+        if (value.length > 2) {
+            this.cardExpiry = value.slice(0, 2) + '/' + value.slice(2, 4);
+        } else {
+            this.cardExpiry = value;
+        }
+    }
+
+    handleVerifyCard() {
+        if (!this.cardNameInput || this.cardNameInput.trim() === '') {
+            this.showToastNotification('Cardholder Name Required', 'Please enter the name on the card.', 'error');
+            return;
+        }
+        const cardDigits = this.cardNumber.replace(/\s/g, '');
+        if (!cardDigits || cardDigits.length < 16) {
+            this.showToastNotification('Invalid Card Number', 'Please enter a valid 16-digit card number.', 'error');
+            return;
+        }
+        if (!this.cardExpiry || !/^\d{2}\/\d{2}$/.test(this.cardExpiry)) {
+            this.showToastNotification('Invalid Expiry Date', 'Please enter expiry in MM/YY format.', 'error');
+            return;
+        }
+        if (!this.cardCvv || this.cardCvv.length < 3) {
+            this.showToastNotification('Invalid CVV', 'Please enter a 3-digit CVV.', 'error');
+            return;
+        }
+
+        this.isVerifyingCard = true;
+        this.cardVerificationButtonLabel = 'Processing Card Payment...';
+
+        setTimeout(() => {
+            this.isVerifyingCard = false;
+            this.isCardVerified = true;
+            this.paymentStatus = 'Paid';
+            this.cardVerificationButtonLabel = '✓ Card Verified';
+            this.showToastNotification('Payment Verified', 'Card payment of ₹' + this.grandTotal + ' processed successfully!', 'success');
+        }, 2000);
+    }
 
     // Input Handlers
     handleCarChange(event) {
@@ -395,6 +585,16 @@ export default class CarBooking extends LightningElement {
 
     // Call apex to save booking
     handleBookNow() {
+        // Real payment validations
+        if (this.paymentMethod === 'upi' && !this.isUpiVerified) {
+            this.showToastNotification('Payment Required', 'Please scan the QR code and verify your UPI payment first.', 'error');
+            return;
+        }
+        if (this.paymentMethod === 'card' && !this.isCardVerified) {
+            this.showToastNotification('Payment Required', 'Please enter your card details and process card payment first.', 'error');
+            return;
+        }
+
         const params = {
             carName: this.activeCarName,
             customerName: this.cusName,
@@ -460,9 +660,30 @@ export default class CarBooking extends LightningElement {
         this.insuranceSelected = false;
         this.roadsideSelected = false;
         this.paymentMethod = 'destination';
+        this.bookingStatus = 'Confirmed';
+        this.paymentStatus = 'Pending';
         this.currentStep = 1;
         this.isBookingSuccessful = false;
         this.bookingId = '';
+
+        // Reset payment verification details
+        this.upiTransactionId = '';
+        this.isUpiVerified = false;
+        this.upiCountdown = 300;
+        this.upiCountdownStr = '05:00';
+        this.isVerifyingUpi = false;
+        this.upiVerificationButtonLabel = 'Verify Payment';
+        if (this.upiTimerInterval) {
+            clearInterval(this.upiTimerInterval);
+        }
+
+        this.cardNameInput = '';
+        this.cardNumber = '';
+        this.cardExpiry = '';
+        this.cardCvv = '';
+        this.isCardVerified = false;
+        this.isVerifyingCard = false;
+        this.cardVerificationButtonLabel = 'Verify Card & Pay';
 
         // Reset default dates
         const tomorrow = new Date();

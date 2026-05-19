@@ -5,7 +5,7 @@ import { refreshApex } from '@salesforce/apex';
 import isGuest from '@salesforce/user/isGuest';
 import basePath from '@salesforce/community/basePath';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-//import logoResource from '@salesforce/resourceUrl/Logo';
+import logo1 from '@salesforce/resourceUrl/logo1';
 //import {translate,getStoredLocale,setStoredLocale,localeFromUrlParam,LOCALE_EVENT} from 'c/dcSiteTranslator';
 
 const ACTIVE_TAB_STORAGE_KEY = 'dc_navbar_active_tab_id';
@@ -25,10 +25,6 @@ export default class Dc_NavBar extends LightningElement {
     @track activeTabId = '';
     @track profileMenuActive = false;
     @track reportOpen = false;
-
-    // ==================== AUTH STATE ====================
-    @track isLoggedIn = false;
-    @track userName = '';
 
     _wiredNavTabsResult;
 
@@ -51,12 +47,23 @@ export default class Dc_NavBar extends LightningElement {
     searchTimeout;
     
     //Search Location func. bhaskar
+    textCurrentLocation = 'Use Current Location';
     textSuggestions = 'Suggestions';
+    textSearchHistory = 'Recent Searches';
 
     @track suggestions = [];
 
+    @track historyItems = [
+        { id: 'h1', text: 'Bhagalpur' },
+        { id: 'h2', text: 'Patna' }
+    ];
+
     get hasSuggestions() {
         return this.suggestions && this.suggestions.length > 0;
+    }
+
+    get showHistorySection() {
+        return this.historyItems && this.historyItems.length > 0;
     }
 
     handleSearchClick() {
@@ -68,12 +75,63 @@ export default class Dc_NavBar extends LightningElement {
         event.preventDefault();
     }
 
+    handleCurrentLocation() {
+        this.searchTerm = 'Current Location';
+        this.showDropdown = false;
+    }
+
     handleSuggestionClick(event) {
         this.searchTerm = event.currentTarget.dataset.text;
         this.showDropdown = false;
     }
+    async handleLoginClick(event) {
+            event.preventDefault();
+            
+            if (!this.validateLoginForm()) {
+                this.showToast('Error', 'Please fix the form errors', 'error');
+                return;
+            }
+    
+            this.isLoading = true;
+    
+            try {
+                const result = await loginContact({ 
+                    email: this.email, 
+                    password: this.password 
+                });
+                
+                if (result === 'Failed') {
+                    throw new Error('Invalid email or password');
+                }
+                
+                const parsedResult = JSON.parse(result);
+                
+                this.showToast('Success', 'Login successful! Welcome back.', 'success');
+                
+                const loginSuccessEvent = new CustomEvent('loginsuccess', {
+                    detail: {
+                        email: this.email,
+                        name: parsedResult.name,
+                        phone: parsedResult.phone,
+                        timestamp: new Date().toISOString()
+                    },
+                    bubbles: true,
+                    composed: true
+                });
+                this.dispatchEvent(loginSuccessEvent);
+                
+                this.closeAllModals();
+            } catch (error) {
+                this.showToast('Login Failed', error.message || 'Invalid email or password', 'error');
+            } finally {
+                this.isLoading = false;
+            }
+        }
 
-
+    handleHistoryClick(event) {
+        this.searchTerm = event.currentTarget.dataset.text;
+        this.showDropdown = false;
+    }
     handleSearchTermChange(event) {
         this.searchTerm = event.target.value;
         this.showDropdown = true;
@@ -98,39 +156,44 @@ export default class Dc_NavBar extends LightningElement {
     }
 
     handleSearchCommit() {
-        if (this.searchTerm && this.searchTerm.trim().length > 0) {
-            getSearchSuggestions({ searchTerm: this.searchTerm })
-                .then(result => {
-                    this.suggestions = result;
-                    if (result && result.length === 0) {
-                        this.dispatchEvent(
-                            new ShowToastEvent({
-                                title: 'No Results',
-                                message: 'No Cars Found',
-                                variant: 'error'
-                            })
-                        );
-                    } else {
-                        // Fire event to notify dcFiltersAllCars component
-                        window.dispatchEvent(new CustomEvent('performSearch', { detail: this.searchTerm }));
+    if (this.searchTerm && this.searchTerm.trim().length > 0) {
 
-                        const bp = (basePath || '/s').replace(/\/$/, '');
-                        const searchUrl = `${bp}/dcfilterallcars?search=${encodeURIComponent(this.searchTerm)}`;
-                        
-                        // Check if we are already on the page, if not navigate
-                        if (!window.location.pathname.includes('/dcfilterallcars') && !window.location.pathname.toLowerCase().includes('/dcfiltersallcars')) {
-                            window.location.assign(searchUrl);
-                        } else {
-                            // Update URL without reloading if already on page
-                            window.history.pushState({}, '', searchUrl);dcfilterallcars
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching suggestions', error);
-                });
-        }
+        getSearchSuggestions({ searchTerm: this.searchTerm })
+            .then(result => {
+
+                this.suggestions = result;
+
+                if (result && result.length === 0) {
+
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'No Results',
+                            message: 'No Cars Found',
+                            variant: 'error'
+                        })
+                    );
+
+                } else {
+
+                    // optional event
+                    window.dispatchEvent(
+                        new CustomEvent('performSearch', {
+                            detail: this.searchTerm
+                        })
+                    );
+
+                    const bp = (basePath || '/s').replace(/\/$/, '');
+
+const searchUrl =
+    `${bp}/dcfilterallcars?search=${encodeURIComponent(this.searchTerm)}`;
+
+window.location.href = searchUrl;
+            }})
+            .catch(error => {
+                console.error('Error fetching suggestions', error);
+            });
     }
+}
     //End Of Search Func
 
     /** Client UI locale: English or Hindi (persists in localStorage). */
@@ -151,7 +214,7 @@ export default class Dc_NavBar extends LightningElement {
     }
 
     get logoUrl() {
-        return logoResource;
+        return logo1;
     }
 
     // get toggleMenuAria() {
@@ -366,19 +429,8 @@ export default class Dc_NavBar extends LightningElement {
     this.activeTabId = this.getStoredActiveTabId();
     this.profileMenuActive = this.getStoredProfileMenuActive();
 
-    // Restore login state from session storage
-    const storedLogin = sessionStorage.getItem('safar_is_logged_in');
-    if (storedLogin === 'true') {
-        this.isLoggedIn = true;
-        this.userName = sessionStorage.getItem('safar_user_name') || 'USER';
-    }
-
     if (typeof window !== 'undefined') {
         document.addEventListener('click', this._boundDocumentClick);
-        
-        // Listen for global auth events
-        window.addEventListener('userlogin', this.handleUserLogin.bind(this));
-        window.addEventListener('userlogout', this.handleUserLogout.bind(this));
     }
 
     const currentPath = window.location.pathname;
@@ -410,8 +462,13 @@ export default class Dc_NavBar extends LightningElement {
         const bp = (basePath || '/s').replace(/\/$/, '');
         window.location.assign(`${bp}/`);
     }
-  
     
+    handleLogoutClick(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        this.navigateTo('/logout');
+    }
 
 
     normalizeTabs(items) {
@@ -431,8 +488,19 @@ export default class Dc_NavBar extends LightningElement {
         return false;
     }
 
-    // ALWAYS hide generic Sign In/Login tabs to prevent duplication with the primary Login/Register button
-    const loginNames = [
+    // Protected tabs
+    const protectedNames = [
+        'Sign In',
+        'login'
+        // 'dashboard',
+        // 'my profile',
+        // 'manage-rentals'
+    ];
+
+    const isProtected = protectedNames.includes(tName);
+
+    // Guest-only tabs
+    const guestOnlyNames = [
         'sign in',
         'sign-in',
         'signin',
@@ -441,26 +509,22 @@ export default class Dc_NavBar extends LightningElement {
         'create account'
     ];
 
-    if (loginNames.includes(tName)) {
-        return false;
-    }
-
-    // Protected tabs
-    const protectedNames = [
-        // 'dashboard',
-        // 'my profile',
-        // 'manage-rentals'
-    ];
-
-    const isProtected = protectedNames.includes(tName);
+    const isGuestOnly = guestOnlyNames.includes(tName);
 
     // Hide protected tabs for guests
     if (isProtected && isGuest) {
         return false;
     }
 
+    // Hide login tabs for logged-in users
+    if (isGuestOnly && !isGuest) {
+        return false;
+    }
+
     return true;
 });
+
+        // Guest-only tabs and protected tabs logic kept same, dynamic 'Sign In' tab removed so we can render a custom button in HTML instead.
 
         return filteredItems.map((tab) => {
             const children = Array.isArray(tab.children) ? tab.children : [];
@@ -620,10 +684,7 @@ export default class Dc_NavBar extends LightningElement {
         return !this.isGuestUser ? 'header-inner header-inner--member' : 'header-inner';
     }
 
-    handleToggleMenu(event) {
-        if (event) {
-            event.stopPropagation();
-        }
+    handleToggleMenu() {
         this.menuOpen = !this.menuOpen;
         if (!this.menuOpen) {
             this.openTabId = '';
@@ -672,11 +733,16 @@ export default class Dc_NavBar extends LightningElement {
             this.navigateTo(path);
         }
     }
+
     handleDocumentClick(event) {
         const path = event.composedPath();
 
         if (this.menuOpen) {
-            const clickedInsideMenu = this.template.contains(event.target);
+            const clickedInsideMenu = path.some(
+                (node) =>
+                    node?.classList?.contains?.('mobile-menu') ||
+                    node?.classList?.contains?.('hamburger')
+            );
 
             if (!clickedInsideMenu) {
                 this.menuOpen = false;
@@ -851,42 +917,5 @@ export default class Dc_NavBar extends LightningElement {
         const siteBase = pathname.replace(/\/[^/]*$/, '') || '';
         const baseUrl = window.location.origin + siteBase;
         return baseUrl + normalizedPath;
-    }
-
-    // ==================== AUTH HANDLERS ====================
-    handleUserLogin(event) {
-        this.isLoggedIn = true;
-        this.userName = event.detail?.name || 'USER';
-    }
-
-    handleUserLogout() {
-        this.isLoggedIn = false;
-        this.userName = '';
-    }
-
-    handleProfileNav(event) {
-        event.preventDefault();
-        const tab = event.currentTarget.dataset.tab;
-        const bp = (basePath || '/s').replace(/\/$/, '');
-        // Navigate to the dynamic user-dashboard page passing the selected tab
-        window.location.assign(`${bp}/user-dashboard?tab=${tab}`);
-    }
-
-    handleSignOut(event) {
-        event.preventDefault();
-        
-        // Clear session storage
-        sessionStorage.removeItem('safar_is_logged_in');
-        sessionStorage.removeItem('safar_user_name');
-        
-        this.isLoggedIn = false;
-        this.userName = '';
-        
-        // Broadcast logout event
-        window.dispatchEvent(new CustomEvent('userlogout'));
-        
-        // Redirect to home page
-        const bp = (basePath || '/s').replace(/\/$/, '');
-        window.location.assign(`${bp}/`);
     }
 }
